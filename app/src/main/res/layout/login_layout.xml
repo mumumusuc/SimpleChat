@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:adjustViewBounds="true"
+    android:maxWidth="600dp">
+
+    <ImageView
+        android:id="@+id/login_avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="4dp"
+        android:src="@mipmap/ic_launcher_round" />
+
+    <EditText
+        android:id="@+id/login_input_username"
+        style="@style/InputTextStyle"
+        android:layout_below="@+id/login_avatar"
+        android:layout_centerHorizontal="true"
+        android:hint="用户名" />
+
+    <EditText
+        android:id="@+id/login_input_password"
+        style="@style/InputTextStyle"
+        android:layout_below="@+id/login_input_username"
+        android:layout_centerHorizontal="true"
+        android:hint="密码"
+        android:inputType="textPassword" />
+
+    <CheckBox
+        android:id="@+id/login_provision"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/login_input_password"
+        android:layout_below="@+id/login_input_password"
+        android:checked="true"
+        android:text="我已阅读并同意条款" />
+
+    <Button
+        android:id="@+id/login_confirm"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/login_input_password"
+        android:layout_below="@+id/login_provision"
+        android:text="登录" />
+
+    <ProgressBar
+        android:id="@+id/login_waiting"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/login_confirm"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/login_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/login_waiting"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textColor="?attr/colorAccent" />
+
+</RelativeLayout>
