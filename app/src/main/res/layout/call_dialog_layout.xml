@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <com.mumu.simplechat.bean.EMVideoView
+        android:id="@+id/call_opposite_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"/>
+
+    <com.mumu.simplechat.bean.EMVideoView
+        android:id="@+id/call_local_surface"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@null"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:transitionName="shared_call_root">
+
+        <ImageView
+            android:id="@+id/call_avatar"
+            android:layout_width="@dimen/call_avatar_size"
+            android:layout_height="@dimen/call_avatar_size"
+            android:layout_margin="16dp"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ic_launcher_round"
+            android:transitionName="shared_call_avatar" />
+
+        <TextView
+            android:id="@+id/call_name"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户名"
+            android:transitionName="shared_call_name" />
+
+        <TextView
+            android:id="@+id/call_state"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="通话中　０５：５９" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/call_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:drawablePadding="4dp"
+            android:drawableTop="@drawable/icon_call_answer"
+            android:gravity="center"
+            android:text="拨打"
+            android:transitionName="shared_call_answer" />
+
+        <TextView
+            android:id="@+id/call_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:drawablePadding="4dp"
+            android:drawableTop="@drawable/icon_call_reject_end"
+            android:gravity="center"
+            android:text="挂断"
+            android:transitionName="shared_call_reject" />
+    </LinearLayout>
+</RelativeLayout>

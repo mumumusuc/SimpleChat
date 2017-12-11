@@ -1,6 +1,8 @@
 package com.mumu.simplechat.presenters.impl
 
 import com.mumu.simplechat.bean.UserInfo
+import com.mumu.simplechat.eventbus.EventBus
+import com.mumu.simplechat.eventbus.events.RegisterSuccessEvent
 import com.mumu.simplechat.model.IUserModel
 import com.mumu.simplechat.model.impl.EMUserModel
 import com.mumu.simplechat.presenters.IRegisterPresenter
@@ -35,6 +37,7 @@ class RegisterPresenter : IRegisterPresenter, IUserModel.Callback {
     override fun onSuccess() {
         mRegisterView?.showRegisterWaiting(false)
         mRegisterView?.showMessage("注册成功")
+        EventBus.post(RegisterSuccessEvent())
     }
 
     override fun onProgress(progress: Int, status: String?) {

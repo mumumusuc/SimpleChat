@@ -4,6 +4,7 @@ import android.content.Intent
 import com.google.common.eventbus.Subscribe
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.LoginSuccessEvent
+import com.mumu.simplechat.eventbus.events.RegisterSuccessEvent
 import com.mumu.simplechat.presenters.ISplashPresenter
 import com.mumu.simplechat.views.ISplashView
 
@@ -50,7 +51,7 @@ class SplashPresenter : ISplashPresenter {
         val context = mSplashView?.getContext()
         if (context != null) {
             try {
-                val intent = Intent("android.intent.action.MAIN_ACTIVITY")
+                val intent = Intent("com.mumu.simplechat.MAIN_ACTIVITY")
                 intent.`package` = context.packageName
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
@@ -59,5 +60,10 @@ class SplashPresenter : ISplashPresenter {
                 e.printStackTrace()
             }
         }
+    }
+
+    @Subscribe
+    fun onRegisterSuccess(event: RegisterSuccessEvent) {
+        mSplashView?.showLoginView()
     }
 }

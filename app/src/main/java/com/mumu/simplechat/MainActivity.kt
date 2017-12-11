@@ -1,7 +1,17 @@
 package com.mumu.simplechat
 
+import android.app.ActivityOptions
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.*
+import android.widget.ImageView
+import android.widget.PopupWindow
+import android.widget.TextView
 import com.hyphenate.EMConnectionListener
 import com.hyphenate.EMError
 import com.hyphenate.chat.EMClient
@@ -10,15 +20,24 @@ import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.util.NetUtils
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.hyphenate.easeui.EaseConstant
-import com.hyphenate.easeui.widget.EaseConversationList
+import com.mumu.simplechat.presenters.IIncomingCallPresenter
+import com.mumu.simplechat.presenters.impl.IncomingCallPresenter
+import com.mumu.simplechat.views.IIncomingCallView
 
 
-class MainActivity : AppCompatActivity(), EMConnectionListener {
+class MainActivity : AppCompatActivity(), EMConnectionListener, IIncomingCallView {
+
+    companion object {
+        private val sIncomingCallPresenter: IIncomingCallPresenter = IncomingCallPresenter()
+    }
 
     private val conversationListFragment = EaseConversationListFragment()
     private var conversationChatFragment = EaseChatFragment()
+    private val mHandler: Handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        //window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         EMClient.getInstance().chatManager().loadAllConversations()
@@ -26,11 +45,12 @@ class MainActivity : AppCompatActivity(), EMConnectionListener {
         conversationListFragment.setConversationListItemClickListener(object : EaseConversationListFragment.EaseConversationListItemClickListener {
             override fun onListItemClicked(conversation: EMConversation?) {
                 val id = conversation?.conversationId()
-                if(!id.isNullOrEmpty()){
-                    if(conversationChatFragment?.isAdded){
+                if (!id.isNullOrEmpty()) {
+                    if (conversationChatFragment?.isAdded) {
                         supportFragmentManager.beginTransaction().remove(conversationChatFragment).commit()
                         conversationChatFragment = EaseChatFragment()
                     }
+                    conversationChatFragment
                     val args = Bundle()
                     args.putInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE)
                     args.putString(EaseConstant.EXTRA_USER_ID, id)
@@ -41,17 +61,24 @@ class MainActivity : AppCompatActivity(), EMConnectionListener {
                 }
             }
         })
+        conversationChatFragment.showTitleBar()
         supportFragmentManager.beginTransaction()
                 .add(R.id.conversation_list_container, conversationListFragment)
                 .commit()
         //传入参数
-        val args = Bundle()
+/*        val args = Bundle()
         args.putInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE)
         args.putString(EaseConstant.EXTRA_USER_ID, "111")
         conversationChatFragment.arguments = args
         supportFragmentManager.beginTransaction()
                 .add(R.id.conversation_chat_container, conversationChatFragment)
-                .commit()
+                .commit()*/
+        sIncomingCallPresenter.bind(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sIncomingCallPresenter.bind(null)
     }
 
     override fun onConnected() {
@@ -69,5 +96,82 @@ class MainActivity : AppCompatActivity(), EMConnectionListener {
                 //当前网络不可用，请检查网络设置
             }
         }
+    }
+
+    /*incoming call dialog*/
+    private var mIcomingViewRoot: View? = null
+    private var mIcomingView: PopupWindow? = null
+    private var mIcomingAvatar: ImageView? = null
+    private var mIcomingTitle: TextView? = null
+    private var mIcomingAnswer: View? = null
+    private var mIcomingReject: View? = null
+    private val mIcomingClicker = object : View.OnClickListener {
+        override fun onClick(p0: View?) {
+            when (p0?.id) {
+                R.id.incoming_answer -> {
+                    sIncomingCallPresenter.onAnswer()
+                }
+                R.id.incoming_reject -> {
+                    sIncomingCallPresenter.onReject()
+                }
+            }
+        }
+    }
+
+    private fun createIncomingView() {
+        mIcomingView = PopupWindow(this)
+        val root = LayoutInflater.from(this).inflate(R.layout.incoming_call_view, null, false);
+        mIcomingViewRoot = root?.findViewById(R.id.incoming_root)
+        mIcomingAnswer = root?.findViewById(R.id.incoming_answer)
+        mIcomingReject = root?.findViewById(R.id.incoming_reject)
+        mIcomingAvatar = root?.findViewById(R.id.incoming_avatar) as ImageView
+        mIcomingTitle = root?.findViewById(R.id.incoming_title) as TextView
+        mIcomingAnswer?.setOnClickListener(mIcomingClicker)
+        mIcomingReject?.setOnClickListener(mIcomingClicker)
+
+        mIcomingView?.contentView = root
+        mIcomingView?.width = ViewGroup.LayoutParams.WRAP_CONTENT
+        mIcomingView?.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        mIcomingView?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    override fun showIncomingCall(from: String) {
+        mHandler.post {
+            if (mIcomingView == null) {
+                createIncomingView()
+            }
+            if (!mIcomingView!!.isShowing) {
+                mIcomingView?.showAtLocation(
+                        window.decorView,
+                        Gravity.CENTER_HORIZONTAL or Gravity.TOP,
+                        0,
+                        0)
+            }
+            mIcomingTitle?.text = from
+        }
+    }
+
+    override fun dismissIncomingCall(from: String) {
+        if (mIcomingView?.isShowing == true) {
+            mHandler.post {
+                mIcomingView?.dismiss()
+            }
+        }
+    }
+
+    override fun go(intent: Intent) {
+        intent.`package` = packageName
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        val option = ActivityOptions.makeSceneTransitionAnimation(
+                this,
+                android.util.Pair.create(mIcomingViewRoot, "shared_call_root"),
+                android.util.Pair.create(mIcomingTitle, "shared_call_name"),
+                android.util.Pair.create(mIcomingAvatar, "shared_call_avatar"),
+                android.util.Pair.create(mIcomingAnswer, "shared_call_answer"),
+                android.util.Pair.create(mIcomingReject, "shared_call_reject")
+        )
+        //startActivity(intent)
+        startActivity(intent, option.toBundle())
     }
 }

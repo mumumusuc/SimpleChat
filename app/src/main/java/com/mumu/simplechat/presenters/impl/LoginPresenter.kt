@@ -1,6 +1,7 @@
 package com.mumu.simplechat.presenters.impl
 
 import android.content.Intent
+import com.google.common.eventbus.Subscribe
 import com.mumu.simplechat.bean.UserInfo
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.LoginSuccessEvent
@@ -40,9 +41,12 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
     }
 
     override fun onSuccess() {
+        val context = mLoginView?.getContext()
         mLoginView?.showLoginWaiting(false)
         mLoginView?.showMessage("登录成功")
-        mUserModel.saveAsDefaultUser(mLoginView!!.getContext(), mUser!!)
+        if (context != null) {
+            mUserModel.saveAsDefaultUser(context, mUser!!)
+        }
         goMainActivity()
     }
 

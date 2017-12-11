@@ -1,15 +1,14 @@
-package com.mumu.simplechat
+package com.mumu.simplechat.views.impl
 
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
+import com.mumu.simplechat.R
 import com.mumu.simplechat.presenters.ISplashPresenter
 import com.mumu.simplechat.presenters.impl.SplashPresenter
 import com.mumu.simplechat.views.ISplashView
-import com.mumu.simplechat.views.impl.LoginView
-import com.mumu.simplechat.views.impl.RegisterView
 
 class SplashActivity : AppCompatActivity(), ISplashView {
     companion object {
