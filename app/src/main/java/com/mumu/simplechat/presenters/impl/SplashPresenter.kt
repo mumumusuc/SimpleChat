@@ -1,10 +1,13 @@
 package com.mumu.simplechat.presenters.impl
 
-import android.content.Intent
 import com.google.common.eventbus.Subscribe
+import com.mumu.simplechat.Config
+import com.mumu.simplechat.Router
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.LoginSuccessEvent
 import com.mumu.simplechat.eventbus.events.RegisterSuccessEvent
+import com.mumu.simplechat.model.IUserModel
+import com.mumu.simplechat.model.impl.EMUserModel
 import com.mumu.simplechat.presenters.ISplashPresenter
 import com.mumu.simplechat.views.ISplashView
 
@@ -15,6 +18,7 @@ class SplashPresenter : ISplashPresenter {
 
     private var mSplashView: ISplashView? = null
     private var mCurrentView: Int = 0
+    private val mUserModel: IUserModel = EMUserModel()
 
     init {
         EventBus.register(this)
@@ -22,7 +26,13 @@ class SplashPresenter : ISplashPresenter {
 
     override fun bind(view: ISplashView?) {
         mSplashView = view
-        showLoginView()
+        if (mUserModel.checkLogin() == IUserModel.State.USER_ALREADY_LOGIN
+                && mUserModel.isAutoLogin()
+                && Config.autoLogin) {
+            goNext()
+        } else {
+            showLoginView()
+        }
     }
 
     override fun onSwitchScreen() {
@@ -48,22 +58,19 @@ class SplashPresenter : ISplashPresenter {
 
     @Subscribe
     fun onLoginSuccess(event: LoginSuccessEvent) {
-        val context = mSplashView?.getContext()
-        if (context != null) {
-            try {
-                val intent = Intent("com.mumu.simplechat.MAIN_ACTIVITY")
-                intent.`package` = context.packageName
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-                mSplashView!!.exit()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+        goNext()
     }
 
     @Subscribe
     fun onRegisterSuccess(event: RegisterSuccessEvent) {
         mSplashView?.showLoginView()
+    }
+
+    private fun goNext() {
+        val context = mSplashView?.getContext()
+        if (context != null) {
+            Router.goRecentChatView(context)
+        }
+        mSplashView?.close()
     }
 }

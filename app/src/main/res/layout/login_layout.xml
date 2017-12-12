@@ -31,13 +31,22 @@
         android:inputType="textPassword" />
 
     <CheckBox
-        android:id="@+id/login_provision"
+        android:id="@+id/login_save_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/login_input_password"
         android:layout_below="@+id/login_input_password"
-        android:checked="true"
-        android:text="我已阅读并同意条款" />
+        android:checked="false"
+        android:text="记住用户" />
+
+    <CheckBox
+        android:id="@+id/login_auto_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/login_input_password"
+        android:layout_toEndOf="@+id/login_save_user"
+        android:checked="false"
+        android:text="自动登录" />
 
     <Button
         android:id="@+id/login_confirm"
@@ -45,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/login_input_password"
-        android:layout_below="@+id/login_provision"
+        android:layout_below="@+id/login_save_user"
         android:text="登录" />
 
     <ProgressBar

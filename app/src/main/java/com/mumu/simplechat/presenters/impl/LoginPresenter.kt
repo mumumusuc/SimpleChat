@@ -18,6 +18,8 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
     override fun bind(view: ILoginView?) {
         mLoginView = view
         if (mLoginView != null) {
+            mLoginView?.enableAutoLogin(mUserModel.isAutoLogin())
+            mLoginView?.enableSaveUser(mUserModel.isSaveUser())
             val default = mUserModel.getDefaultSavedUser(mLoginView!!.getContext())
             if (default != null) {
                 mLoginView!!.showUserName(default.useName)
@@ -38,6 +40,21 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
     }
 
     override fun onCancel() {
+    }
+
+    override fun onSaveUser(save: Boolean) {
+        if(mUserModel.isAutoLogin()){
+            mLoginView?.enableSaveUser(true)
+            return
+        }
+        mUserModel.enableSaveUser(save)
+        mLoginView?.enableSaveUser(save)
+    }
+
+    override fun onAutoLogin(auto: Boolean) {
+        mUserModel.enableAutoLogin(auto)
+        mLoginView?.enableAutoLogin(auto)
+        mLoginView?.enableSaveUser(auto)
     }
 
     override fun onSuccess() {

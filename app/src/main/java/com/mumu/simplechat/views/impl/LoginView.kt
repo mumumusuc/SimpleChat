@@ -26,7 +26,8 @@ class LoginView : Fragment(), ILoginView {
     private var loginAvatar: ImageView? = null
     private var loginName: EditText? = null
     private var loginPassword: EditText? = null
-    private var loginProvision: CheckBox? = null
+    private var loginSaveUser: CheckBox? = null
+    private var loginAutoLogin: CheckBox? = null
     private var loginConfirm: Button? = null
     private var loginMsg: TextView? = null
     private var loginWait: ProgressBar? = null
@@ -50,16 +51,23 @@ class LoginView : Fragment(), ILoginView {
         loginAvatar = root.findViewById(R.id.login_avatar) as ImageView
         loginName = root.findViewById(R.id.login_input_username) as EditText
         loginPassword = root.findViewById(R.id.login_input_password) as EditText
-        loginProvision = root.findViewById(R.id.login_provision) as CheckBox
+        loginSaveUser = root.findViewById(R.id.login_save_user) as CheckBox
+        loginAutoLogin = root.findViewById(R.id.login_auto_login) as CheckBox
         loginConfirm = root.findViewById(R.id.login_confirm) as Button
         loginMsg = root.findViewById(R.id.login_msg) as TextView
         loginWait = root.findViewById(R.id.login_waiting) as ProgressBar
 
-        loginProvision?.setOnCheckedChangeListener { compoundButton, checked ->
+        loginSaveUser?.setOnCheckedChangeListener { _, checked ->
             run {
-                loginConfirm?.isEnabled = checked
+                sPresenter.onSaveUser(checked)
             }
         }
+        loginAutoLogin?.setOnCheckedChangeListener { _, checked ->
+            run {
+                sPresenter.onAutoLogin(checked)
+            }
+        }
+
         loginConfirm?.setOnClickListener { view -> sPresenter?.onLogin() }
         return root
     }
@@ -89,6 +97,18 @@ class LoginView : Fragment(), ILoginView {
     override fun showMessage(msg: String) {
         sHandler.post {
             loginMsg?.text = msg
+        }
+    }
+
+    override fun enableAutoLogin(enable: Boolean) {
+        sHandler.post {
+            loginAutoLogin?.isChecked = enable
+        }
+    }
+
+    override fun enableSaveUser(enbale: Boolean) {
+        sHandler.post {
+            loginSaveUser?.isChecked = enbale
         }
     }
 }

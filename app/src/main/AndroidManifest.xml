@@ -29,7 +29,7 @@
         <!--splash activity,login,register-->
         <activity
             android:name=".views.impl.SplashActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan|stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,10 +40,13 @@
         <!--main activity,user-list,chat-conversation-->
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan|stateVisible">
             <intent-filter>
                 <action android:name="com.mumu.simplechat.MAIN_ACTIVITY" />
+                <action android:name="com.mumu.simplechat.RECENT_CHAT_ACTIVITY" />
                 <action android:name="com.mumu.simplechat.INCOMING_CALL_ACTIVITY" />
+                <action android:name="com.mumu.simplechat.TEST_MAKE_CALL" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -54,10 +57,17 @@
             android:theme="@style/CallActivityTheme">
             <intent-filter>
                 <action android:name="com.mumu.simplechat.CALL_ACTIVITY" />
+                <action android:name="com.mumu.simplechat.MAKE_CALL" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <receiver android:name=".CallReceiver">
+            <intent-filter>
+                <action android:name="com.mumu.simplechat.action.incomingcall" />
+            </intent-filter>
+        </receiver>
+
 
         <!-- 设置环信应用的AppKey -->
         <meta-data

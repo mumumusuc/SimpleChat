@@ -1,9 +1,5 @@
 package com.mumu.simplechat.model.impl
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.util.Log
 import com.hyphenate.chat.EMCallStateChangeListener
 import com.mumu.simplechat.model.ICallModel
 import com.hyphenate.exceptions.EMServiceNotReadyException
@@ -12,27 +8,24 @@ import com.hyphenate.media.EMCallSurfaceView
 import com.mumu.simplechat.bean.IVideoView
 import com.hyphenate.exceptions.EMNoActiveCallException
 
-class EMCallModel : ICallModel<String>, EMCallStateChangeListener {
+object EMCallModel : ICallModel<String>, EMCallStateChangeListener {
     private val TAG = EMCallModel::class.java.simpleName
 
     private var mStateListener: ICallModel.CallCallback? = null
-    private var fromUser: String? = null
-    private var toUser: String? = null
-    private var callType: ICallModel.CallType? = null
 
     init {
         EMClient.getInstance().callManager().addCallStateChangeListener(this)
     }
 
-    private fun setStateListener(listener: ICallModel.CallCallback) {
-        if (listener == mStateListener) return
+    private fun setStateListener(listener: ICallModel.CallCallback?) {
+        if (listener == null || listener == mStateListener) return
         mStateListener?.onCallStateChanged(
                 ICallModel.CallState.IDLE,
                 ICallModel.CallError.ERROR_UNAVAILABLE)
         mStateListener = listener
     }
 
-    override fun makeAudioCall(user: String, stateListener: ICallModel.CallCallback) {
+    override fun makeAudioCall(user: String, stateListener: ICallModel.CallCallback?) {
         setStateListener(stateListener)
         try {//单参数
             EMClient.getInstance().callManager().makeVoiceCall(user)
@@ -44,7 +37,7 @@ class EMCallModel : ICallModel<String>, EMCallStateChangeListener {
         }
     }
 
-    override fun makeVideoCall(user: String, stateListener: ICallModel.CallCallback) {
+    override fun makeVideoCall(user: String, stateListener: ICallModel.CallCallback?) {
         setStateListener(stateListener)
         try {//单参数
             EMClient.getInstance().callManager().makeVideoCall(user)
@@ -56,7 +49,7 @@ class EMCallModel : ICallModel<String>, EMCallStateChangeListener {
         }
     }
 
-    override fun answerCall(user: String, stateListener: ICallModel.CallCallback) {
+    override fun answerCall(user: String, stateListener: ICallModel.CallCallback?) {
         setStateListener(stateListener)
         try {
             EMClient.getInstance().callManager().answerCall()
@@ -69,17 +62,19 @@ class EMCallModel : ICallModel<String>, EMCallStateChangeListener {
     }
 
     override fun endCall(user: String) {
-        EMClient.getInstance().callManager().endCall();
+        try {
+            EMClient.getInstance().callManager().endCall();
+        } catch (e: EMNoActiveCallException) {
+            e.printStackTrace()
+        }
     }
 
     override fun rejectCall(user: String) {
         try {
             EMClient.getInstance().callManager().rejectCall()
         } catch (e: EMNoActiveCallException) {
-            // TODO Auto-generated catch block
             e.printStackTrace()
         }
-
     }
 
     override fun setVideoCallSurface(opposite: IVideoView, local: IVideoView) {
@@ -105,24 +100,4 @@ class EMCallModel : ICallModel<String>, EMCallStateChangeListener {
             ICallModel.CallError.valueOf(error?.name ?: "error_unknown")
     )
 
-    /**/
-    private inner class IncomingCallLisenter : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            // 拨打方username
-            val from = intent?.getStringExtra("from") ?: ""
-            // call type
-            val type = intent?.getStringExtra("type") ?: ""
-            if (from.isNullOrEmpty() || type.isNullOrEmpty()) {
-                return
-            }
-            fromUser = from
-            callType = convertToCallType(type)
-            Log.d(TAG, "onReceive -> from:$fromUser, type:$callType")
-            //TODO:跳转到通话页面
-        }
-    }
-
-    private fun convertToCallType(type: String): ICallModel.CallType {
-        return ICallModel.CallType.valueOf(type.toLowerCase())
-    }
 }

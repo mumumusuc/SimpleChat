@@ -3,9 +3,9 @@ package com.mumu.simplechat.model
 import com.mumu.simplechat.bean.IVideoView
 
 interface ICallModel<in T> {
-    fun makeAudioCall(user: T, stateListener: CallCallback)
-    fun makeVideoCall(user: T, stateListener: CallCallback)
-    fun answerCall(user: T, stateListener: CallCallback)
+    fun makeAudioCall(user: T, stateListener: CallCallback?)
+    fun makeVideoCall(user: T, stateListener: CallCallback?)
+    fun answerCall(user: T, stateListener: CallCallback?)
     fun endCall(user: T)
     fun rejectCall(user: T)
     fun setVideoCallSurface(opposite: IVideoView, local: IVideoView)

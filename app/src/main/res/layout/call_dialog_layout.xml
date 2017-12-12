@@ -8,7 +8,7 @@
         android:id="@+id/call_opposite_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="16dp"/>
+        android:visibility="gone" />
 
     <com.mumu.simplechat.bean.EMVideoView
         android:id="@+id/call_local_surface"
@@ -16,7 +16,8 @@
         android:layout_height="256dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -28,7 +29,7 @@
         android:transitionName="shared_call_root">
 
         <ImageView
-            android:id="@+id/call_avatar"
+            android:id="@+id/call_user_avatar"
             android:layout_width="@dimen/call_avatar_size"
             android:layout_height="@dimen/call_avatar_size"
             android:layout_margin="16dp"
@@ -37,7 +38,7 @@
             android:transitionName="shared_call_avatar" />
 
         <TextView
-            android:id="@+id/call_name"
+            android:id="@+id/call_user_name"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,35 +50,19 @@
             style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="通话中　０５：５９" />
+            android:text="" />
     </LinearLayout>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/call_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
-
-        <TextView
-            android:id="@+id/call_call"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:drawablePadding="4dp"
-            android:drawableTop="@drawable/icon_call_answer"
-            android:gravity="center"
-            android:text="拨打"
-            android:transitionName="shared_call_answer" />
-
-        <TextView
-            android:id="@+id/call_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:drawablePadding="4dp"
-            android:drawableTop="@drawable/icon_call_reject_end"
-            android:gravity="center"
-            android:text="挂断"
-            android:transitionName="shared_call_reject" />
-    </LinearLayout>
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:drawablePadding="4dp"
+        android:drawableTop="@drawable/icon_call_reject_end"
+        android:gravity="center"
+        android:text="挂断"
+        android:transitionName="shared_call_reject" />
 </RelativeLayout>

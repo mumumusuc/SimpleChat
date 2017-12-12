@@ -4,7 +4,7 @@ import android.content.Context
 
 interface ISplashView {
     fun getContext(): Context
-    fun exit()
+    fun close()
     fun showLoginView()
     fun showRegisterView()
 }

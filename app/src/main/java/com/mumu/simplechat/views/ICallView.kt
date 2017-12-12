@@ -1,15 +1,19 @@
 package com.mumu.simplechat.views
 
+import android.graphics.drawable.Drawable
 import com.mumu.simplechat.bean.IVideoView
 
 interface ICallView {
-    fun showSelfVoiceEnable(enable: Boolean)
-    fun showSelfVideoEnable(enable: Boolean)
-    fun showVideoView(show: Boolean)
+    fun showOppositeVideoView(show: Boolean)
     fun showSelfVideoView(show: Boolean)
     fun showAudioView(show: Boolean)
 
-    fun showMessage(msg: String)
     fun getOppositeVideoView(): IVideoView
     fun getLocalVideoView(): IVideoView
+
+    fun showUserAvatar(avatar: Drawable?)
+    fun showUserName(name: String)
+    fun showMessage(msg: String)
+
+    fun close()
 }

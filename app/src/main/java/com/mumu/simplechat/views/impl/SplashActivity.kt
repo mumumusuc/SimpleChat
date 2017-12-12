@@ -67,7 +67,7 @@ class SplashActivity : AppCompatActivity(), ISplashView {
         sPresenter.bind(null)
     }
 
-    override fun exit() {
+    override fun close() {
         finish()
     }
 }

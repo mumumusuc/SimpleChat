@@ -9,5 +9,9 @@ interface ILoginView {
     fun getPassword(): String
     fun showLoginWaiting(show: Boolean)
     fun showMessage(msg: String)
+
+    fun enableAutoLogin(enable:Boolean)
+    fun enableSaveUser(enbale:Boolean)
+
     fun getContext(): Context
 }

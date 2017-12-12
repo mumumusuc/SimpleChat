@@ -17,6 +17,8 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.R.attr.key
 import android.R.attr.data
+import com.mumu.simplechat.Config
+import com.mumu.simplechat.MainApplication
 import java.nio.charset.Charset
 
 
@@ -28,6 +30,9 @@ class EMUserModel : IUserModel {
     private val MIN_PASSWORD_LENGTH = 6
     private val MAX_PASSWORD_LENGTH = 10
     private val DEFAULT_USER = "default_user"
+    private val AUTO_LOGIN = "auto_login"
+    private var autoLogin: Boolean? = null
+    private var saveUser: Boolean? = null
 
     override fun saveAsDefaultUser(context: Context, user: UserInfo): Boolean {
         val state = checkUser(user)
@@ -56,6 +61,14 @@ class EMUserModel : IUserModel {
 
     override fun queryUsers(): Array<UserInfo>? {
         return null
+    }
+
+    override fun checkLogin(): IUserModel.State {
+        if (EMClient.getInstance().isLoggedInBefore) {
+            return IUserModel.State.USER_ALREADY_LOGIN
+        } else {
+            return IUserModel.State.NO_USER_LOGIN
+        }
     }
 
     override fun checkUser(user: UserInfo): IUserModel.State {
@@ -107,6 +120,45 @@ class EMUserModel : IUserModel {
         })
     }
 
+    private fun getSavedInfo() {
+        val sp = MainApplication?.getContext()?.getSharedPreferences(AUTO_LOGIN, Context.MODE_PRIVATE)
+        autoLogin = sp?.getBoolean("login", Config.autoLogin) ?: Config.autoLogin
+        saveUser = sp?.getBoolean("save", Config.saveLogin) ?: Config.saveLogin
+    }
+
+    private fun saveInfo() {
+        val sp = MainApplication?.getContext()?.getSharedPreferences(AUTO_LOGIN, Context.MODE_PRIVATE)
+        val editor = sp?.edit()
+        editor?.clear()
+        editor?.putBoolean("login", if (autoLogin == true) true else Config.autoLogin)
+        editor?.putBoolean("save", if (saveUser == true) true else Config.saveLogin)
+        editor?.commit()
+    }
+
+    override fun isAutoLogin(): Boolean {
+        if (autoLogin == null) {
+            getSavedInfo()
+        }
+        return autoLogin!!
+    }
+
+    override fun isSaveUser(): Boolean {
+        if (saveUser == null) {
+            getSavedInfo()
+        }
+        return saveUser!!
+    }
+
+    override fun enableAutoLogin(enable: Boolean) {
+        autoLogin = enable
+        saveInfo()
+    }
+
+    override fun enableSaveUser(enable: Boolean) {
+        saveUser = enable
+        saveInfo()
+    }
+
     override fun register(user: UserInfo, callback: IUserModel.Callback) {
         val state = checkUser(user)
         if (state != IUserModel.State.NO_ERROR) {
@@ -133,7 +185,7 @@ class EMUserModel : IUserModel {
                 return IUserModel.State.NO_ERROR
             }
             EMError.USER_ALREADY_LOGIN -> {
-                return IUserModel.State.ERROR_ALEARDY_LOGIN
+                return IUserModel.State.USER_ALREADY_LOGIN
             }
             else -> {
                 return IUserModel.State.ERROR_UNKNOWN

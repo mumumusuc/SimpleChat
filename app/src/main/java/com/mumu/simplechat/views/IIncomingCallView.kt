@@ -1,9 +1,9 @@
 package com.mumu.simplechat.views
 
-import android.content.Intent
+import android.content.Context
 
 interface IIncomingCallView {
-    fun go(intent: Intent)
-    fun showIncomingCall(from: String)
-    fun dismissIncomingCall(from: String)
+    fun getContext(): Context
+    fun showIncomingCall(msg: String)
+    fun dismissIncomingCall()
 }

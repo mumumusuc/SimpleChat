@@ -1,6 +1,7 @@
 package com.mumu.simplechat
 
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -20,6 +21,7 @@ import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.util.NetUtils
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.hyphenate.easeui.EaseConstant
+import com.mumu.simplechat.bean.CallArgument
 import com.mumu.simplechat.presenters.IIncomingCallPresenter
 import com.mumu.simplechat.presenters.impl.IncomingCallPresenter
 import com.mumu.simplechat.views.IIncomingCallView
@@ -36,8 +38,6 @@ class MainActivity : AppCompatActivity(), EMConnectionListener, IIncomingCallVie
     private val mHandler: Handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        //window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         EMClient.getInstance().chatManager().loadAllConversations()
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity(), EMConnectionListener, IIncomingCallVie
         }
     }
 
-    override fun dismissIncomingCall(from: String) {
+    override fun dismissIncomingCall() {
         if (mIcomingView?.isShowing == true) {
             mHandler.post {
                 mIcomingView?.dismiss()
@@ -159,19 +159,19 @@ class MainActivity : AppCompatActivity(), EMConnectionListener, IIncomingCallVie
         }
     }
 
-    override fun go(intent: Intent) {
-        intent.`package` = packageName
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        val option = ActivityOptions.makeSceneTransitionAnimation(
-                this,
-                android.util.Pair.create(mIcomingViewRoot, "shared_call_root"),
-                android.util.Pair.create(mIcomingTitle, "shared_call_name"),
-                android.util.Pair.create(mIcomingAvatar, "shared_call_avatar"),
-                android.util.Pair.create(mIcomingAnswer, "shared_call_answer"),
-                android.util.Pair.create(mIcomingReject, "shared_call_reject")
-        )
-        //startActivity(intent)
-        startActivity(intent, option.toBundle())
+    override fun onNewIntent(intent: Intent?) {
+        if (intent != null) {
+            if (intent.action == "com.mumu.simplechat.TEST_MAKE_CALL") {
+                val to = intent.getStringExtra("to")
+                val type = Utils.parseCallType(intent.getStringExtra("type"))
+                if (!to.isNullOrEmpty() && type != null) {
+                    Router.goCallView(this, CallArgument(null, to, type))
+                    return
+                }
+            }
+            sIncomingCallPresenter.onInvoke(intent)
+        }
     }
+
+    override fun getContext(): Context = this
 }
