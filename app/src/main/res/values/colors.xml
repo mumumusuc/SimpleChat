@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="dock_item_pressed">@color/colorPrimary</color>
+    <color name="dock_item_selected">@color/colorPrimary</color>
+    <color name="dock_bg_color">@color/gray_pressed</color>
+
+    <color name="divider_color">#30bbbbbb</color>
 </resources>

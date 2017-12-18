@@ -1,7 +1,6 @@
 package com.mumu.simplechat.views.impl
 
 import android.app.Fragment
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
@@ -19,16 +18,15 @@ class SplashActivity : AppCompatActivity(), ISplashView {
     private var mLoginView: Fragment? = null
     private var mRegisterView: Fragment? = null
 
-    override fun getContext(): Context = baseContext
-
     override fun showLoginView() {
+        if (mLoginView == null) mLoginView = LoginView()
         val transaction = fragmentManager.beginTransaction()
-        if (!mLoginView!!.isAdded) {
+        if (mLoginView?.isAdded == false) {
             transaction.add(R.id.fragment_container, mLoginView, "LOGIN")
         } else {
             transaction.show(mLoginView)
         }
-        if (mRegisterView!!.isAdded) {
+        if (mRegisterView?.isAdded == true) {
             transaction.hide(mRegisterView)
         }
         transaction.commit()
@@ -36,13 +34,14 @@ class SplashActivity : AppCompatActivity(), ISplashView {
     }
 
     override fun showRegisterView() {
+        if (mRegisterView == null) mRegisterView = RegisterView()
         val transaction = fragmentManager.beginTransaction()
-        if (!mRegisterView!!.isAdded) {
+        if (mRegisterView?.isAdded == false) {
             transaction.add(R.id.fragment_container, mRegisterView, "REGISTER")
         } else {
             transaction.show(mRegisterView)
         }
-        if (mLoginView!!.isAdded) {
+        if (mLoginView?.isAdded == true) {
             transaction.hide(mLoginView)
         }
         transaction.commit()
@@ -56,8 +55,6 @@ class SplashActivity : AppCompatActivity(), ISplashView {
         }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
-        if (mLoginView == null) mLoginView = LoginView()
-        if (mRegisterView == null) mRegisterView = RegisterView()
         sPresenter.bind(this)
         mSwitcher.setOnClickListener { _ -> sPresenter?.onSwitchScreen() }
     }

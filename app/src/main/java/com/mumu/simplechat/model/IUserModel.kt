@@ -9,9 +9,9 @@ interface IUserModel {
     fun queryUsers(): Array<UserInfo>?
     fun checkLogin(): State
     fun checkUser(user: UserInfo): State
-    fun login(user: UserInfo, callback: Callback)
-    fun logout(callback: Callback)
-    fun register(user: UserInfo, callback: Callback)
+    fun login(user: UserInfo, callback: Callback?)
+    fun logout(callback: Callback?)
+    fun register(user: UserInfo, callback: Callback?)
 
     fun isAutoLogin(): Boolean
     fun isSaveUser(): Boolean

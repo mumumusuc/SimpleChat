@@ -1,17 +1,17 @@
 package com.mumu.simplechat.presenters.impl
 
-import android.content.Intent
-import com.google.common.eventbus.Subscribe
+import android.util.Log
 import com.mumu.simplechat.bean.UserInfo
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.LoginSuccessEvent
 import com.mumu.simplechat.model.IUserModel
-import com.mumu.simplechat.model.impl.EMUserModel
+import com.mumu.simplechat.model.impl.EMUserManager
 import com.mumu.simplechat.presenters.ILoginPresenter
 import com.mumu.simplechat.views.ILoginView
 
 class LoginPresenter : ILoginPresenter, IUserModel.Callback {
-    private val mUserModel: IUserModel = EMUserModel()
+    private val TAG = LoginPresenter::class.java.simpleName
+    private val mUserModel: IUserModel = EMUserManager()
     private var mLoginView: ILoginView? = null
     private var mUser: UserInfo? = null
 
@@ -21,6 +21,7 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
             mLoginView?.enableAutoLogin(mUserModel.isAutoLogin())
             mLoginView?.enableSaveUser(mUserModel.isSaveUser())
             val default = mUserModel.getDefaultSavedUser(mLoginView!!.getContext())
+
             if (default != null) {
                 mLoginView!!.showUserName(default.useName)
                 mLoginView!!.showPassword(default.password)
@@ -29,21 +30,22 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
     }
 
     override fun onLogin() {
+        Log.d(TAG, "onLogin")
         mUser = UserInfo(
                 mLoginView?.getUserName() ?: "",
                 mLoginView?.getPassword() ?: "",
                 null
         )
-        mUserModel.login(mUser!!, this)
         mLoginView?.showLoginWaiting(true)
         mLoginView?.showMessage("登录中")
+        mUserModel.login(mUser!!, this)
     }
 
     override fun onCancel() {
     }
 
     override fun onSaveUser(save: Boolean) {
-        if(mUserModel.isAutoLogin()){
+        if (mUserModel.isAutoLogin()) {
             mLoginView?.enableSaveUser(true)
             return
         }
@@ -54,7 +56,8 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
     override fun onAutoLogin(auto: Boolean) {
         mUserModel.enableAutoLogin(auto)
         mLoginView?.enableAutoLogin(auto)
-        mLoginView?.enableSaveUser(auto)
+        if (auto)
+            mLoginView?.enableSaveUser(true)
     }
 
     override fun onSuccess() {
@@ -71,6 +74,7 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
     }
 
     override fun onError(state: IUserModel.State, message: String?) {
+        Log.d(TAG, "onError -> state = ${state}")
         mLoginView?.showLoginWaiting(false)
         mLoginView?.showMessage("$state , $message")
         mUser = null

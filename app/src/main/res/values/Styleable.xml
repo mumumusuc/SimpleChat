@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TitleBarAttrs">
+        <attr name="leftDrawable" format="reference"/>
+        <attr name="leftText" format="reference|string"/>
+        <attr name="showLeftDrawable" format="boolean"/>
+        <attr name="showLeftText" format="boolean"/>
+        <attr name="rightDrawable" format="reference"/>
+        <attr name="rightText" format="reference|string"/>
+        <attr name="showRightDrawable" format="boolean"/>
+        <attr name="showRightText" format="boolean"/>
+        <attr name="titleTextSize" format="dimension|reference"/>
+        <attr name="boundTextSize" format="dimension|reference"/>
+        <attr name="textColor" format="reference|color"/>
+    </declare-styleable>
+</resources>

@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
@@ -23,6 +25,7 @@ class LoginView : Fragment(), ILoginView {
         private val sHandler = Handler(Looper.getMainLooper())
     }
 
+    private val TAG = LoginView::class.java.simpleName
     private var loginAvatar: ImageView? = null
     private var loginName: EditText? = null
     private var loginPassword: EditText? = null
@@ -89,9 +92,8 @@ class LoginView : Fragment(), ILoginView {
     override fun getPassword(): String = loginPassword?.text?.toString() ?: ""
 
     override fun showLoginWaiting(show: Boolean) {
-        sHandler.post {
-            loginWait?.visibility = if (show) VISIBLE else INVISIBLE
-        }
+        Log.d(TAG, "showLoginWaiting -> ${show}")
+        sHandler.post { loginWait?.visibility = if (show) VISIBLE else INVISIBLE }
     }
 
     override fun showMessage(msg: String) {

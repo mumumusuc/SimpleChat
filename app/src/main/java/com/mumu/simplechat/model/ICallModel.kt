@@ -9,6 +9,7 @@ interface ICallModel<in T> {
     fun endCall(user: T)
     fun rejectCall(user: T)
     fun setVideoCallSurface(opposite: IVideoView, local: IVideoView)
+    fun switchCamera()
 
     interface CallCallback {
         fun onCallStateChanged(state: CallState, error: CallError)

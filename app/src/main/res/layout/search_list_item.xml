@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawablePadding="8dp"
+    android:drawableStart="@drawable/ic_person_add"
+    android:drawableTint="@color/black_deep"
+    android:gravity="center_vertical"
+    android:textSize="@dimen/list_item_text_size"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp"
+    android:text="text" />

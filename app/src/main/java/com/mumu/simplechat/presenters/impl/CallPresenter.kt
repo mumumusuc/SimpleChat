@@ -1,18 +1,23 @@
 package com.mumu.simplechat.presenters.impl
 
+import android.content.Context
 import android.content.Intent
+import android.hardware.camera2.CameraManager
 import android.util.Log
+import com.mumu.simplechat.MainApplication
 import com.mumu.simplechat.Router
 import com.mumu.simplechat.bean.UserInfo
 import com.mumu.simplechat.model.ICallModel
-import com.mumu.simplechat.model.impl.EMCallModel
+import com.mumu.simplechat.model.impl.EMCallManager
 import com.mumu.simplechat.presenters.ICallPresenter
 import com.mumu.simplechat.views.ICallView
+import android.hardware.camera2.CameraCharacteristics
+
 
 class CallPresenter : ICallPresenter, ICallModel.CallCallback {
     private val TAG = CallPresenter::class.java.simpleName
 
-    private val mCallModel: ICallModel<String> = EMCallModel
+    private val mCallModel: ICallModel<String> = EMCallManager
     private var mCallView: ICallView? = null
     private var mLastState: ICallModel.CallState? = null
 
@@ -23,7 +28,6 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
                     mCallView!!.getLocalVideoView(),
                     mCallView!!.getOppositeVideoView()
             )
-
         } else {
             onEndCall()
         }
@@ -34,9 +38,18 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
         val from = arg.getFrom()
         val to = arg.getTo()
         val type = arg.getType()
+        Log.d(TAG, "onInvoke -> from = $from, to = $to, type = $type")
         if (!from.isNullOrEmpty() && !from.isNullOrBlank()) {
             Log.i(TAG, "onInvoke -> 接听${type}电话")
             //TODO 控制界面显示
+            when (type) {
+                ICallModel.CallType.AUDIO -> {
+                    showAudioCallView()
+                }
+                ICallModel.CallType.VIDEO -> {
+                    showVideoCallView()
+                }
+            }
         } else if (!to.isNullOrEmpty() && !to.isNullOrBlank()) {
             Log.i(TAG, "onInvoke -> 拨打${type}电话")
             makeCall(to!!, type)
@@ -77,7 +90,8 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
             ICallModel.CallState.DISCONNECTED -> {
                 mCallView?.showMessage("电话断线")
                 Log.d(TAG, "onCallStateChanged -> DISCONNECTED")
-                if (mLastState == ICallModel.CallState.CONNECTED) {
+                if (mLastState == ICallModel.CallState.ACCEPTED ||
+                        mLastState == ICallModel.CallState.CONNECTED) {
                     //TODO:关闭通话界面,释放相关资源
                     mCallView?.showMessage("电话挂断")
                     onEndCall()
@@ -108,9 +122,11 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
         when (type) {
             ICallModel.CallType.AUDIO -> {
                 mCallModel.makeAudioCall(name, this)
+                showAudioCallView()
             }
             ICallModel.CallType.VIDEO -> {
                 mCallModel.makeVideoCall(name, this)
+                showVideoCallView()
             }
         }
     }
@@ -129,5 +145,18 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
         mCallView?.showAudioView(false)
         mCallView?.showOppositeVideoView(true)
         mCallView?.showSelfVideoView(true)
+    }
+
+    private fun switchCamera(){
+        val cameraManager = MainApplication.getContext()!!.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        val cameras = cameraManager.cameraIdList
+        cameras.forEach { Log.i(TAG, "get camera $it") }
+        if(cameras.size <= 1){
+            val characteristics = cameraManager.getCameraCharacteristics(cameras[0])
+            if(CameraCharacteristics.LENS_FACING_FRONT != characteristics.get(CameraCharacteristics.LENS_FACING)){
+                Log.d(TAG,"got 1 camera and itsnt LENS_FACING_FRONT,switch camera")
+                mCallModel.switchCamera()
+            }
+        }
     }
 }

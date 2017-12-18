@@ -8,6 +8,7 @@ import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.view.View.*
 import android.widget.ImageView
 import android.widget.TextView
 import com.mumu.simplechat.R
@@ -16,14 +17,15 @@ import com.mumu.simplechat.presenters.ICallPresenter
 import com.mumu.simplechat.presenters.impl.CallPresenter
 import com.mumu.simplechat.views.ICallView
 
-class CallDialogActivity : AppCompatActivity(), ICallView {
+class CallActivity : AppCompatActivity(), ICallView {
     companion object {
         private val sPresenter: ICallPresenter = CallPresenter()
+        private val sHandler = Handler(Looper.getMainLooper())
     }
 
-    private val TAG = CallDialogActivity::class.java.simpleName
+    private val TAG = CallActivity::class.java.simpleName
 
-    private val mHandler: Handler = Handler(Looper.getMainLooper())
+    private val mUserRoot: View by lazy { findViewById(R.id.call_user_root) }
     private val mUserAvatar: ImageView by lazy { findViewById(R.id.call_user_avatar) as ImageView }
     private val mUserName: TextView by lazy { findViewById(R.id.call_user_name) as TextView }
     private val mStateMsg: TextView by lazy { findViewById(R.id.call_state) as TextView }
@@ -51,17 +53,23 @@ class CallDialogActivity : AppCompatActivity(), ICallView {
     override fun getLocalVideoView(): IVideoView = mCallLocalView
 
     override fun showOppositeVideoView(show: Boolean) {
-        val view = mCallOppositeView as View
-        view.visibility = if (show) View.VISIBLE else View.INVISIBLE
+        sHandler.post {
+            val view = mCallOppositeView as View
+            view.visibility = if (show) VISIBLE else INVISIBLE
+        }
     }
 
     override fun showSelfVideoView(show: Boolean) {
-        val view = mCallLocalView as View
-        view.visibility = if (show) View.VISIBLE else View.INVISIBLE
+        sHandler.post {
+            val view = mCallLocalView as View
+            view.visibility = if (show) VISIBLE else INVISIBLE
+        }
     }
 
     override fun showAudioView(show: Boolean) {
-
+        sHandler.post {
+            mUserRoot.visibility = if (show) VISIBLE else GONE
+        }
     }
 
     override fun showUserAvatar(avatar: Drawable?) {
@@ -75,7 +83,7 @@ class CallDialogActivity : AppCompatActivity(), ICallView {
     }
 
     override fun showMessage(msg: String) {
-        mHandler.post {
+        sHandler.post {
             mStateMsg?.text = msg
         }
     }

@@ -4,12 +4,12 @@ import com.mumu.simplechat.bean.UserInfo
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.RegisterSuccessEvent
 import com.mumu.simplechat.model.IUserModel
-import com.mumu.simplechat.model.impl.EMUserModel
+import com.mumu.simplechat.model.impl.EMUserManager
 import com.mumu.simplechat.presenters.IRegisterPresenter
 import com.mumu.simplechat.views.IRegisterView
 
 class RegisterPresenter : IRegisterPresenter, IUserModel.Callback {
-    private val mUserModel: IUserModel = EMUserModel()
+    private val mUserModel: IUserModel = EMUserManager()
     private var mRegisterView: IRegisterView? = null
 
     override fun bind(view: IRegisterView?) {

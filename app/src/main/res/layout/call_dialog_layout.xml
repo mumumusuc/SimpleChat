@@ -20,6 +20,7 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/call_user_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

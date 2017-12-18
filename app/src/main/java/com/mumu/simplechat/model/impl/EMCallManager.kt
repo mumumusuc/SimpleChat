@@ -8,8 +8,8 @@ import com.hyphenate.media.EMCallSurfaceView
 import com.mumu.simplechat.bean.IVideoView
 import com.hyphenate.exceptions.EMNoActiveCallException
 
-object EMCallModel : ICallModel<String>, EMCallStateChangeListener {
-    private val TAG = EMCallModel::class.java.simpleName
+object EMCallManager : ICallModel<String>, EMCallStateChangeListener {
+    private val TAG = EMCallManager::class.java.simpleName
 
     private var mStateListener: ICallModel.CallCallback? = null
 
@@ -77,11 +77,16 @@ object EMCallModel : ICallModel<String>, EMCallStateChangeListener {
         }
     }
 
+    override fun switchCamera() {
+        EMClient.getInstance().callManager().switchCamera();
+    }
+
     override fun setVideoCallSurface(opposite: IVideoView, local: IVideoView) {
         EMClient.getInstance().callManager().setSurfaceView(
                 opposite.asSurfaceView<EMCallSurfaceView>(),
                 local.asSurfaceView<EMCallSurfaceView>()
         )
+        EMClient.getInstance().callManager().getCallOptions().setVideoResolution(1080, 720);
     }
 
     /**/

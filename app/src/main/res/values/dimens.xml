@@ -3,4 +3,9 @@
     <dimen name="ic_size">48dp</dimen>
     <dimen name="ic_inner_size">32dp</dimen>
     <dimen name="call_avatar_size">125dp</dimen>
+    <dimen name="ic_dock_size">36dp</dimen>
+    <dimen name="list_item_text_size">20sp</dimen>
+    <dimen name="title_bar_max_height">52dp</dimen>
+    <dimen name="title_icon_size">@dimen/ic_inner_size</dimen>
+    <dimen name="title_text_size">24px</dimen>
 </resources>

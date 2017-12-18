@@ -2,12 +2,13 @@ package com.mumu.simplechat.presenters.impl
 
 import com.google.common.eventbus.Subscribe
 import com.mumu.simplechat.Config
+import com.mumu.simplechat.MainApplication
 import com.mumu.simplechat.Router
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.LoginSuccessEvent
 import com.mumu.simplechat.eventbus.events.RegisterSuccessEvent
 import com.mumu.simplechat.model.IUserModel
-import com.mumu.simplechat.model.impl.EMUserModel
+import com.mumu.simplechat.model.impl.EMUserManager
 import com.mumu.simplechat.presenters.ISplashPresenter
 import com.mumu.simplechat.views.ISplashView
 
@@ -18,7 +19,7 @@ class SplashPresenter : ISplashPresenter {
 
     private var mSplashView: ISplashView? = null
     private var mCurrentView: Int = 0
-    private val mUserModel: IUserModel = EMUserModel()
+    private val mUserModel: IUserModel = EMUserManager()
 
     init {
         EventBus.register(this)
@@ -26,12 +27,10 @@ class SplashPresenter : ISplashPresenter {
 
     override fun bind(view: ISplashView?) {
         mSplashView = view
-        if (mUserModel.checkLogin() == IUserModel.State.USER_ALREADY_LOGIN
-                && mUserModel.isAutoLogin()
-                && Config.autoLogin) {
-            goNext()
-        } else {
+        if (needLogin()) {
             showLoginView()
+        } else {
+            goNext()
         }
     }
 
@@ -66,11 +65,14 @@ class SplashPresenter : ISplashPresenter {
         mSplashView?.showLoginView()
     }
 
+    private fun needLogin():Boolean =
+        mUserModel.checkLogin() != IUserModel.State.USER_ALREADY_LOGIN
+                || !mUserModel.isAutoLogin()
+                || !Config.autoLogin
+
+
     private fun goNext() {
-        val context = mSplashView?.getContext()
-        if (context != null) {
-            Router.goRecentChatView(context)
-        }
+        Router.goMainView(MainApplication.getContext()!!)
         mSplashView?.close()
     }
 }

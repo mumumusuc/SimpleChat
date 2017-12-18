@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@null">
+    android:adjustViewBounds="true"
+    android:background="@null"
+    android:maxWidth="800dp"
+    android:minWidth="400dp">
 
     <RelativeLayout
         android:id="@+id/incoming_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/incoming_call_bg"
+        android:background="@drawable/round_corner_bg"
         android:elevation="8dp"
-        android:maxWidth="600dp"
-        android:minWidth="400dp"
         android:padding="16dp"
         android:transitionName="shared_call_root">
 

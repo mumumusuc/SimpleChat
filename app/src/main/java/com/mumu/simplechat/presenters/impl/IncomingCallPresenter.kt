@@ -2,18 +2,19 @@ package com.mumu.simplechat.presenters.impl
 
 import android.content.Intent
 import android.util.Log
+import com.mumu.simplechat.MainApplication
 import com.mumu.simplechat.Router
 import com.mumu.simplechat.bean.CallArgument
 import com.mumu.simplechat.presenters.IIncomingCallPresenter
 import com.mumu.simplechat.views.IIncomingCallView
 import com.mumu.simplechat.model.ICallModel
-import com.mumu.simplechat.model.impl.EMCallModel
+import com.mumu.simplechat.model.impl.EMCallManager
 
 
 class IncomingCallPresenter : IIncomingCallPresenter {
     private val TAG = IncomingCallPresenter::class.java.simpleName
     private var mIncomingCallView: IIncomingCallView? = null
-    private val mCallModel: ICallModel<String> = EMCallModel
+    private val mCallModel: ICallModel<String> = EMCallManager
     private var mCallArgument: CallArgument? = null
 
     override fun bind(view: IIncomingCallView?) {
@@ -41,9 +42,11 @@ class IncomingCallPresenter : IIncomingCallPresenter {
 
     override fun onAnswer() {
         if (mCallArgument == null) return
-        Router.goCallView(mIncomingCallView!!.getContext(), mCallArgument!!)
+        val context = MainApplication.getContext()
+        if(context != null) {
+            Router.goCallView(context, mCallArgument!!)
+        }
         mIncomingCallView?.dismissIncomingCall()
         mCallModel.answerCall("", null)
     }
-
 }

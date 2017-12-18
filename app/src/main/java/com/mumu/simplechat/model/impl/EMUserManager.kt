@@ -1,7 +1,6 @@
 package com.mumu.simplechat.model.impl
 
 import android.content.Context
-import android.os.Build
 import android.util.Base64
 import com.hyphenate.EMCallBack
 import com.hyphenate.EMError
@@ -10,19 +9,16 @@ import com.hyphenate.exceptions.HyphenateException
 import com.mumu.simplechat.bean.UserInfo
 import com.mumu.simplechat.model.IUserModel
 import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import android.R.attr.data
-import android.R.attr.key
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
-import android.R.attr.key
-import android.R.attr.data
+import android.util.Log
 import com.mumu.simplechat.Config
 import com.mumu.simplechat.MainApplication
 import java.nio.charset.Charset
 
 
-class EMUserModel : IUserModel {
+class EMUserManager : IUserModel {
+    private val TAG = EMUserManager::class.java.simpleName
     private val CipherMode = "AES/CFB/NoPadding"
     private val CipherKey = "EMUserModel000000000000000000000"
     private val MIN_USER_NAME_LENGTH = 1
@@ -53,6 +49,7 @@ class EMUserModel : IUserModel {
         val sp = context.getSharedPreferences(DEFAULT_USER, Context.MODE_PRIVATE)
         val name = sp.getString("name", "")
         val pwd = sp.getString("pwd", "")
+        Log.d(TAG, "getDefaultSavedUser -> name=$name, pwd=$pwd")
         if (name.isNullOrEmpty() || pwd.isNullOrEmpty()) {
             return null
         }
@@ -83,39 +80,44 @@ class EMUserModel : IUserModel {
         return IUserModel.State.NO_ERROR
     }
 
-    override fun login(user: UserInfo, callback: IUserModel.Callback) {
+    override fun login(user: UserInfo, callback: IUserModel.Callback?) {
         val state = checkUser(user)
+        Log.i(TAG, "login -> checkUser = $state")
         if (state != IUserModel.State.NO_ERROR) {
-            callback.onError(state, null)
+            callback?.onError(state, null)
             return
+        }
+        val lastUser = EMClient.getInstance().currentUser
+        if(!lastUser.isNullOrEmpty() && lastUser != user.useName){
+            logout(null)
         }
         EMClient.getInstance().login(user.useName, user.password, object : EMCallBack {
             override fun onSuccess() {
-                callback.onSuccess()
+                callback?.onSuccess()
             }
 
             override fun onProgress(progress: Int, status: String?) {
-                callback.onProgress(progress, status)
+                callback?.onProgress(progress, status)
             }
 
             override fun onError(code: Int, error: String?) {
-                callback.onError(convertEMErrorCode(code), error)
+                callback?.onError(convertEMErrorCode(code), error)
             }
         })
     }
 
-    override fun logout(callback: IUserModel.Callback) {
+    override fun logout(callback: IUserModel.Callback?) {
         EMClient.getInstance().logout(true, object : EMCallBack {
             override fun onSuccess() {
-                callback.onSuccess()
+                callback?.onSuccess()
             }
 
             override fun onProgress(progress: Int, status: String?) {
-                callback.onProgress(progress, status)
+                callback?.onProgress(progress, status)
             }
 
             override fun onError(code: Int, error: String?) {
-                callback.onError(convertEMErrorCode(code), error)
+                callback?.onError(convertEMErrorCode(code), error)
             }
         })
     }
@@ -159,10 +161,10 @@ class EMUserModel : IUserModel {
         saveInfo()
     }
 
-    override fun register(user: UserInfo, callback: IUserModel.Callback) {
+    override fun register(user: UserInfo, callback: IUserModel.Callback?) {
         val state = checkUser(user)
         if (state != IUserModel.State.NO_ERROR) {
-            callback.onError(state, null)
+            callback?.onError(state, null)
             return
         }
         //TODO: go server for verify
@@ -171,10 +173,10 @@ class EMUserModel : IUserModel {
             try {
                 //注册失败会抛出HyphenateException
                 EMClient.getInstance().createAccount(user.useName, user.password);//同步方法
-                callback.onSuccess()
+                callback?.onSuccess()
             } catch (e: HyphenateException) {
                 e.printStackTrace()
-                callback.onError(IUserModel.State.ERROR_UNKNOWN, e.message)
+                callback?.onError(IUserModel.State.ERROR_UNKNOWN, e.message)
             }
         }).start()
     }

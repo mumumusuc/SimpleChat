@@ -30,7 +30,7 @@
         <activity
             android:name=".views.impl.SplashActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan|stateVisible">
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,12 +39,11 @@
         </activity>
         <!--main activity,user-list,chat-conversation-->
         <activity
-            android:name=".MainActivity"
+            android:name=".views.impl.MainActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan|stateVisible">
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="com.mumu.simplechat.MAIN_ACTIVITY" />
-                <action android:name="com.mumu.simplechat.RECENT_CHAT_ACTIVITY" />
                 <action android:name="com.mumu.simplechat.INCOMING_CALL_ACTIVITY" />
                 <action android:name="com.mumu.simplechat.TEST_MAKE_CALL" />
 
@@ -53,11 +52,19 @@
         </activity>
         <!--call activity,audio/video-call-->
         <activity
-            android:name=".views.impl.CallDialogActivity"
+            android:name=".views.impl.CallActivity"
             android:theme="@style/CallActivityTheme">
             <intent-filter>
                 <action android:name="com.mumu.simplechat.CALL_ACTIVITY" />
                 <action android:name="com.mumu.simplechat.MAKE_CALL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!--conversation activity-->
+        <activity android:name=".ConversationActivity">
+            <intent-filter>
+                <action android:name="com.mumu.simplechat.CONVERSATION_ACTIVITY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

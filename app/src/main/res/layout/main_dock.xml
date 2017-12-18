@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_dock"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/round_corner_bg"
+    android:backgroundTint="#fff"
+    android:elevation="8dp"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/main_dock_chat"
+        style="@style/DockItem">
+
+        <ImageView
+            style="@style/DockItemIcon"
+            android:src="@drawable/ic_dock_chat" />
+
+        <TextView
+            style="@style/DockItemText"
+            android:text="会话" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_dock_contacts"
+        style="@style/DockItem">
+
+        <ImageView
+            style="@style/DockItemIcon"
+            android:src="@drawable/ic_dock_contacts" />
+
+        <TextView
+            style="@style/DockItemText"
+            android:text="通讯录" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_dock_setting"
+        style="@style/DockItem">
+
+        <ImageView
+            style="@style/DockItemIcon"
+            android:src="@drawable/ic_dock_setting" />
+
+        <TextView
+            style="@style/DockItemText"
+            android:text="设置" />
+    </LinearLayout>
+
+</LinearLayout>
