@@ -15,7 +15,7 @@ import com.mumu.simplechat.views.IContactsView
 class EMContactsPresenter : IContactsPresenter {
     private val TAG = EMContactsPresenter::class.java.simpleName
     private var mView: IContactsView? = null
-    private val mContactsManager: IContactsModel<String> = EMContactsManager()
+    private val mContactsManager: IContactsModel<String> = EMContactsManager
     private val mContactsMap = mutableMapOf<String, EaseUser>()
 
     init {

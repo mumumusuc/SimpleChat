@@ -6,6 +6,7 @@ import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMOptions
 import com.hyphenate.easeui.EaseUI
 import com.mumu.simplechat.model.impl.EMCallManager
+import com.mumu.simplechat.model.impl.EMContactsManager
 
 class MainApplication : Application() {
     override fun onCreate() {
@@ -13,7 +14,7 @@ class MainApplication : Application() {
         sContext = applicationContext
         val options = EMOptions()
         // 默认添加好友时，是不需要验证的，改成需要验证
-        options.acceptInvitationAlways = false;
+        options.acceptInvitationAlways = false
         // 是否自动将消息附件上传到环信服务器，默认为True是使用环信服务器上传下载，如果设为 false，需要开发者自己处理附件消息的上传和下载
         //options.setAutoTransferMessageAttachments(true);
         // 是否自动下载附件类消息的缩略图等，默认为 true 这里和上边这个参数相关联
@@ -25,6 +26,7 @@ class MainApplication : Application() {
         EaseUI.getInstance().init(applicationContext, options);
 
         EMCallManager
+        EMContactsManager
     }
 
     override fun onTerminate() {

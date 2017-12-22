@@ -73,7 +73,7 @@ class SearchContactFragment : Fragment(), ISearchContactView {
         titleBar.showRightText(false)
         titleBar.showRightIcon(false)
         titleBar.setLeftIcon(context.getDrawable(R.drawable.ic_left))
-        titleBar.setLeftAction(View.OnClickListener { EventBus.post(BackKeyEvent())})
+        titleBar.setLeftAction(View.OnClickListener { EventBus.post(BackKeyEvent()) })
         return root
     }
 
@@ -100,6 +100,12 @@ class SearchContactFragment : Fragment(), ISearchContactView {
     override fun clearResults() {
         sHandler.post {
             mAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun showMessage(msg: String) {
+        sHandler.post {
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
         }
     }
 }

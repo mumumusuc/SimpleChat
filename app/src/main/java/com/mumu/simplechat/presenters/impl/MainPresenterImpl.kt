@@ -28,12 +28,13 @@ import android.content.Intent
 import android.app.PendingIntent
 import android.content.Context
 import android.widget.RemoteViews
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 
 class MainPresenterImpl : IMainPresenter, EMConnectionListener {
     private val TAG = MainPresenterImpl::class.java.simpleName
 
-    private val mContactsManager: IContactsModel<String> = EMContactsManager()
+    private val mContactsManager: IContactsModel<String> = EMContactsManager
     private var mMainView: IMainView? = null
     private var mInvitationUserName: String? = null
 
@@ -139,10 +140,26 @@ class MainPresenterImpl : IMainPresenter, EMConnectionListener {
 
     override fun onAgree() {
         mContactsManager.agreeInvitation(mInvitationUserName!!)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            if (result == "NO_ERROR") mMainView?.showMessage("已接受好友请求")
+                        },
+                        { e ->
+                            mMainView?.showMessage("发生错误:${e.localizedMessage}")
+                        })
     }
 
     override fun onRefuse() {
         mContactsManager.refuseInvitation(mInvitationUserName!!)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            if (result == "NO_ERROR") mMainView?.showMessage("已拒绝好友请求")
+                        },
+                        { e ->
+                            mMainView?.showMessage("发生错误:${e.localizedMessage}")
+                        })
     }
 
     override fun onBackKey(): Boolean {

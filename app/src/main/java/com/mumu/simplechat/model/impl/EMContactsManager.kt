@@ -10,9 +10,10 @@ import com.mumu.simplechat.eventbus.events.InvitationEvent
 import com.mumu.simplechat.model.IContactsModel
 import io.reactivex.Observable
 import io.reactivex.exceptions.Exceptions
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 
-class EMContactsManager : IContactsModel<String>, EMContactListener {
+object EMContactsManager : IContactsModel<String>, EMContactListener {
     private val TAG = EMContactsManager::class.java.simpleName
 
     init {
@@ -44,21 +45,56 @@ class EMContactsManager : IContactsModel<String>, EMContactListener {
                 }).subscribeOn(Schedulers.io())
     }
 
-    override fun addContacts(name: String, reason: String) {
-        EMClient.getInstance().contactManager().addContact(name, reason);
-    }
+    override fun addContacts(name: String, reason: String): Observable<String> =
+            Observable.just(Pair(name, reason)).subscribeOn(Schedulers.io()).map(
+                    Function<Pair<String, String>, String> {
+                        try {
+                            EMClient.getInstance().contactManager().addContact(name, reason);
+                            return@Function "NO_ERROR"
+                        } catch (e: Exception) {
+                            throw Exceptions.propagate(e)
+                        }
+                    }
+            )
 
-    override fun deleteContacts(name: String) {
-        EMClient.getInstance().contactManager().deleteContact(name);
-    }
+    override fun deleteContacts(name: String): Observable<String> =
+            Observable.just(name).subscribeOn(Schedulers.io()).map(
+                    Function<String, String> {
+                        try {
+                            EMClient.getInstance().contactManager().deleteContact(name)
+                            return@Function "NO_ERROR"
+                        } catch (e: Exception) {
+                            throw Exceptions.propagate(e)
+                        }
+                    }
+            )
 
-    override fun agreeInvitation(name: String) {
-        EMClient.getInstance().contactManager().acceptInvitation(name);
-    }
 
-    override fun refuseInvitation(name: String) {
-        EMClient.getInstance().contactManager().declineInvitation(name);
-    }
+    override fun agreeInvitation(name: String): Observable<String> =
+            Observable.just(name).subscribeOn(Schedulers.io()).map(
+                    Function<String, String> {
+                        try {
+                            EMClient.getInstance().contactManager().acceptInvitation(name);
+                            return@Function "NO_ERROR"
+                        } catch (e: Exception) {
+                            throw Exceptions.propagate(e)
+                        }
+                    }
+            )
+
+
+    override fun refuseInvitation(name: String): Observable<String> =
+            Observable.just(name).subscribeOn(Schedulers.io()).map(
+                    Function<String, String> {
+                        try {
+                            EMClient.getInstance().contactManager().declineInvitation(name);
+                            return@Function "NO_ERROR"
+                        } catch (e: Exception) {
+                            throw Exceptions.propagate(e)
+                        }
+                    }
+            )
+
 
     /**/
     override fun onContactInvited(p0: String, p1: String) {
@@ -72,7 +108,7 @@ class EMContactsManager : IContactsModel<String>, EMContactListener {
 
     override fun onFriendRequestAccepted(p0: String) {
         Log.i(TAG, "好友请求被同意 $p0")
-        //TODO:postevent
+        //TODO:post-event
         EventBus.post(ContactsAcceptedEvent(p0))
     }
 

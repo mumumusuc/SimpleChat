@@ -16,7 +16,9 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_search"
         android:gravity="center_vertical"
-        android:imeOptions="actionSearch" />
+        android:hint="搜索联系人"
+        android:imeOptions="actionSearch"
+        android:singleLine="true" />
 
     <ListView
         android:id="@+id/change_contacts_list"

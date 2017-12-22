@@ -5,11 +5,10 @@ import io.reactivex.Observable
 interface IContactsModel<T> {
     fun getAllContacts(): Observable<List<T>>
     fun findContacts(name: String): Observable<List<T>>
-    fun addContacts(name: String, reason: String)
-    fun deleteContacts(name: String)
-
-    fun agreeInvitation(name: String)
-    fun refuseInvitation(name: String)
+    fun addContacts(name: String, reason: String): Observable<String>
+    fun deleteContacts(name: String):Observable<String>
+    fun agreeInvitation(name: String):Observable<String>
+    fun refuseInvitation(name: String):Observable<String>
 
     interface ContactListener {
         /**

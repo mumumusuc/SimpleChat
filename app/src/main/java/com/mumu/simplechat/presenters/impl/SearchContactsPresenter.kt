@@ -7,6 +7,7 @@ import com.mumu.simplechat.model.IContactsModel
 import com.mumu.simplechat.model.impl.EMContactsManager
 import com.mumu.simplechat.presenters.ISearchContactsPresenter
 import com.mumu.simplechat.views.ISearchContactView
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class SearchContactsPresenter : ISearchContactsPresenter {
 
@@ -17,14 +18,23 @@ class SearchContactsPresenter : ISearchContactsPresenter {
     private val SEARCH_DELAY = 500L
     private var mView: ISearchContactView? = null
     private val mSearchList = mutableListOf<String>()
-    private val mContactsManager: IContactsModel<String> = EMContactsManager()
+    private val mContactsManager: IContactsModel<String> = EMContactsManager
 
     override fun bind(view: ISearchContactView?) {
         mView = view
+        mView?.clearResults()
     }
 
     override fun onAdd(name: String) {
         mContactsManager.addContacts(name, "添加好友")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            if (result == "NO_ERROR") mView?.showMessage("已发送好友请求")
+                        },
+                        { e ->
+                            mView?.showMessage("发生错误:${e.localizedMessage}")
+                        })
     }
 
     override fun getSearchResult(): List<String> = mSearchList
