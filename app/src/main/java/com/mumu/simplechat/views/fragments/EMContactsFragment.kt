@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,8 @@ import com.mumu.simplechat.presenters.impl.EMContactsPresenter
 import com.mumu.simplechat.views.IContactsView
 
 class EMContactsFragment : IContactsView, EaseContactListFragment() {
+    private val TAG = EMContactsFragment::class.java.simpleName
+
     companion object {
         private val sPresenter: IContactsPresenter = EMContactsPresenter()
         private val sHandler = Handler(Looper.getMainLooper())
@@ -45,11 +48,13 @@ class EMContactsFragment : IContactsView, EaseContactListFragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+        Log.i(TAG,"onAttach -> bind with presenter")
         sPresenter.bind(this)
     }
 
     override fun onDetach() {
         super.onDetach()
+        Log.i(TAG,"onDetach -> unbind with presenter")
         sPresenter.bind(null)
     }
 
@@ -60,7 +65,8 @@ class EMContactsFragment : IContactsView, EaseContactListFragment() {
 
     override fun showContacts(contacts: Map<String,EaseUser>) {
         sHandler.post {
-            this.setContactsMap(contacts)
+            setContactsMap(contacts)
+            refresh()
         }
     }
 }

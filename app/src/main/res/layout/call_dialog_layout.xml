@@ -12,8 +12,8 @@
 
     <com.mumu.simplechat.bean.EMVideoView
         android:id="@+id/call_local_surface"
-        android:layout_width="256dp"
-        android:layout_height="256dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"

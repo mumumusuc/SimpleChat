@@ -5,6 +5,7 @@ import android.content.Context
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMOptions
 import com.hyphenate.easeui.EaseUI
+import com.mumu.simplechat.model.impl.EMCallManager
 
 class MainApplication : Application() {
     override fun onCreate() {
@@ -22,6 +23,8 @@ class MainApplication : Application() {
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
         EaseUI.getInstance().init(applicationContext, options);
+
+        EMCallManager
     }
 
     override fun onTerminate() {

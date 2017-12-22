@@ -6,7 +6,6 @@ import com.mumu.simplechat.views.IIncomingCallView
 
 
 interface IIncomingCallPresenter : IPresenter<IIncomingCallView> {
-    fun onInvoke(arg: Intent)
     fun onReject()
     fun onAnswer()
 }

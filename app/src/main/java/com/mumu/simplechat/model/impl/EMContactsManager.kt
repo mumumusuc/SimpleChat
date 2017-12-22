@@ -8,6 +8,9 @@ import com.mumu.simplechat.eventbus.events.ContactsAcceptedEvent
 import com.mumu.simplechat.eventbus.events.ContactsChangedEvent
 import com.mumu.simplechat.eventbus.events.InvitationEvent
 import com.mumu.simplechat.model.IContactsModel
+import io.reactivex.Observable
+import io.reactivex.exceptions.Exceptions
+import io.reactivex.schedulers.Schedulers
 
 class EMContactsManager : IContactsModel<String>, EMContactListener {
     private val TAG = EMContactsManager::class.java.simpleName
@@ -16,13 +19,29 @@ class EMContactsManager : IContactsModel<String>, EMContactListener {
         EMClient.getInstance().contactManager().setContactListener(this)
     }
 
-    override fun getAllContacts(): List<String> {
-        return EMClient.getInstance().contactManager().allContactsFromServer
+    override fun getAllContacts(): Observable<List<String>> {
+        return Observable.create<List<String>>(
+                { subscriber ->
+                    try {
+                        val list = EMClient.getInstance().contactManager().allContactsFromServer
+                        subscriber.onNext(list)
+                        subscriber.onComplete()
+                    } catch (e: Exception) {
+                        subscriber.onError(Exceptions.propagate(e))
+                    }
+                }).subscribeOn(Schedulers.io())
     }
 
-
-    override fun findContacts(name: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun findContacts(name: String): Observable<List<String>> {
+        return Observable.create<List<String>>(
+                { subscriber ->
+                    try {
+                        //subscriber.onNext(list)
+                        subscriber.onComplete()
+                    } catch (e: Exception) {
+                        subscriber.onError(Exceptions.propagate(e))
+                    }
+                }).subscribeOn(Schedulers.io())
     }
 
     override fun addContacts(name: String, reason: String) {

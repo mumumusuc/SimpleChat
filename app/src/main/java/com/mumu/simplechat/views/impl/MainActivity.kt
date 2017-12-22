@@ -1,9 +1,6 @@
 package com.mumu.simplechat.views.impl
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -11,30 +8,20 @@ import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.view.*
-import android.widget.ImageView
-import android.widget.PopupWindow
-import android.widget.TextView
 import android.widget.Toast
-import com.hyphenate.easeui.EaseConstant
 import com.mumu.simplechat.R
 import com.mumu.simplechat.Router
 import com.mumu.simplechat.Utils
 import com.mumu.simplechat.bean.CallArgument
-import com.mumu.simplechat.presenters.IIncomingCallPresenter
 import com.mumu.simplechat.presenters.IMainPresenter
-import com.mumu.simplechat.presenters.impl.IncomingCallPresenter
 import com.mumu.simplechat.presenters.impl.MainPresenterImpl
-import com.mumu.simplechat.views.IConversationView
-import com.mumu.simplechat.views.IIncomingCallView
 import com.mumu.simplechat.views.IMainView
 import com.mumu.simplechat.views.fragments.*
 
 class MainActivity : AppCompatActivity(),
-        IMainView,
-        IIncomingCallView {
+        IMainView{
 
     companion object {
-        private val sIncomingCallPresenter: IIncomingCallPresenter = IncomingCallPresenter()
         private val sMainPresenter: IMainPresenter = MainPresenterImpl()
         private val sHandler = Handler(Looper.getMainLooper())
     }
@@ -92,7 +79,7 @@ class MainActivity : AppCompatActivity(),
     override fun refresh() {
         sHandler.post {
             chatListFragment.refresh()
-            contactsFragment.refresh()
+           // contactsFragment.refresh()
         }
     }
 
@@ -130,72 +117,11 @@ class MainActivity : AppCompatActivity(),
         mContactsTab.setOnClickListener(mTabClickListener)
         mSettingTab.setOnClickListener(mTabClickListener)
         sMainPresenter.bind(this)
-        sIncomingCallPresenter.bind(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         sMainPresenter.bind(null)
-        sIncomingCallPresenter.bind(null)
-    }
-
-    /*incoming call dialog*/
-    private var mIcomingViewRoot: View? = null
-    private var mIcomingView: PopupWindow? = null
-    private var mIcomingAvatar: ImageView? = null
-    private var mIcomingTitle: TextView? = null
-    private var mIcomingAnswer: View? = null
-    private var mIcomingReject: View? = null
-    private val mIcomingClicker = View.OnClickListener { p0 ->
-        when (p0?.id) {
-            R.id.incoming_answer -> {
-                sIncomingCallPresenter.onAnswer()
-            }
-            R.id.incoming_reject -> {
-                sIncomingCallPresenter.onReject()
-            }
-        }
-    }
-
-    private fun createIncomingView() {
-        mIcomingView = PopupWindow(this)
-        val root = LayoutInflater.from(this).inflate(R.layout.incoming_call_view, null, false);
-        mIcomingViewRoot = root?.findViewById(R.id.incoming_root)
-        mIcomingAnswer = root?.findViewById(R.id.incoming_answer)
-        mIcomingReject = root?.findViewById(R.id.incoming_reject)
-        mIcomingAvatar = root?.findViewById(R.id.incoming_avatar) as ImageView
-        mIcomingTitle = root?.findViewById(R.id.incoming_title) as TextView
-        mIcomingAnswer?.setOnClickListener(mIcomingClicker)
-        mIcomingReject?.setOnClickListener(mIcomingClicker)
-
-        mIcomingView?.contentView = root
-        mIcomingView?.width = ViewGroup.LayoutParams.WRAP_CONTENT
-        mIcomingView?.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        mIcomingView?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    }
-
-    override fun showIncomingCall(from: String) {
-        mHandler.post {
-            if (mIcomingView == null) {
-                createIncomingView()
-            }
-            if (!mIcomingView!!.isShowing) {
-                mIcomingView?.showAtLocation(
-                        window.decorView,
-                        Gravity.CENTER_HORIZONTAL or Gravity.TOP,
-                        0,
-                        0)
-            }
-            mIcomingTitle?.text = from
-        }
-    }
-
-    override fun dismissIncomingCall() {
-        if (mIcomingView?.isShowing == true) {
-            mHandler.post {
-                mIcomingView?.dismiss()
-            }
-        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -208,7 +134,6 @@ class MainActivity : AppCompatActivity(),
                     return
                 }
             }
-            sIncomingCallPresenter.onInvoke(intent)
         }
     }
 

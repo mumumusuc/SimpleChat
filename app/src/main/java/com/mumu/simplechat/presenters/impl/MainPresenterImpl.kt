@@ -1,5 +1,6 @@
 package com.mumu.simplechat.presenters.impl
 
+import android.app.Notification
 import android.content.res.Configuration
 import android.os.Bundle
 import com.google.common.eventbus.Subscribe
@@ -12,12 +13,22 @@ import com.hyphenate.easeui.EaseConstant
 import com.mumu.simplechat.Config
 import com.mumu.simplechat.MainApplication
 import com.mumu.simplechat.Router
+import com.mumu.simplechat.bean.CallArgument
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.*
 import com.mumu.simplechat.model.IContactsModel
 import com.mumu.simplechat.model.impl.EMContactsManager
 import com.mumu.simplechat.presenters.IMainPresenter
 import com.mumu.simplechat.views.IMainView
+import android.content.Context.NOTIFICATION_SERVICE
+import android.app.NotificationManager
+import android.support.v4.app.NotificationCompat
+import com.mumu.simplechat.R
+import android.content.Intent
+import android.app.PendingIntent
+import android.content.Context
+import android.widget.RemoteViews
+
 
 class MainPresenterImpl : IMainPresenter, EMConnectionListener {
     private val TAG = MainPresenterImpl::class.java.simpleName
@@ -185,5 +196,11 @@ class MainPresenterImpl : IMainPresenter, EMConnectionListener {
     @Subscribe
     fun onBackKey(event: BackKeyEvent) {
         onBackKey()
+    }
+
+    @Subscribe
+    fun onIncomingCall(event: IncomingCallEvent) {
+        val context = MainApplication.getContext() ?: return
+        IncomingCallPresenter.makeNotification(context, event.from, event.type)
     }
 }
