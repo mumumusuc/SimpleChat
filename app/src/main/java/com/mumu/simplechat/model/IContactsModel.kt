@@ -1,13 +1,15 @@
 package com.mumu.simplechat.model
 
+import io.reactivex.Observable
+
 interface IContactsModel<T> {
-    fun getAllContacts(): List<T>
-    fun findContacts(name: String)
+    fun getAllContacts(): Observable<List<T>>
+    fun findContacts(name: String): Observable<List<T>>
     fun addContacts(name: String, reason: String)
     fun deleteContacts(name: String)
 
-    fun agreeInvitation(name:String)
-    fun refuseInvitation(name:String)
+    fun agreeInvitation(name: String)
+    fun refuseInvitation(name: String)
 
     interface ContactListener {
         /**

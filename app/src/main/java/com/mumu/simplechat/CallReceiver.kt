@@ -4,7 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.mumu.simplechat.bean.CallArgument
+import com.mumu.simplechat.eventbus.EventBus
+import com.mumu.simplechat.eventbus.events.IncomingCallEvent
 
 class CallReceiver : BroadcastReceiver() {
     private val TAG = CallReceiver::class.java.simpleName
@@ -19,7 +20,7 @@ class CallReceiver : BroadcastReceiver() {
         val _type = Utils.parseCallType(type)
         Log.d(TAG,"call from $from ,type $type")
         if (_type != null) {
-            Router.goIncomingCallView(context, CallArgument(from, null, _type))
+            EventBus.post(IncomingCallEvent(from,_type))
         }
     }
 }
