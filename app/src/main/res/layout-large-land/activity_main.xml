@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@null"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -21,12 +22,15 @@
 
     </LinearLayout>
 
+    <include
+        layout="@layout/vertical_divider" />
+
     <FrameLayout
         android:id="@+id/main_conversation_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
-        android:background="@null">
+        android:background="@color/conversation_bg_color">
 
         <ImageView
             android:layout_width="wrap_content"

@@ -1,6 +1,5 @@
 package com.mumu.simplechat.presenters.impl
 
-import android.app.Notification
 import android.content.res.Configuration
 import android.os.Bundle
 import com.google.common.eventbus.Subscribe
@@ -13,21 +12,13 @@ import com.hyphenate.easeui.EaseConstant
 import com.mumu.simplechat.Config
 import com.mumu.simplechat.MainApplication
 import com.mumu.simplechat.Router
-import com.mumu.simplechat.bean.CallArgument
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.*
+import com.mumu.simplechat.model.ICallModel
 import com.mumu.simplechat.model.IContactsModel
 import com.mumu.simplechat.model.impl.EMContactsManager
 import com.mumu.simplechat.presenters.IMainPresenter
 import com.mumu.simplechat.views.IMainView
-import android.content.Context.NOTIFICATION_SERVICE
-import android.app.NotificationManager
-import android.support.v4.app.NotificationCompat
-import com.mumu.simplechat.R
-import android.content.Intent
-import android.app.PendingIntent
-import android.content.Context
-import android.widget.RemoteViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 
@@ -37,6 +28,7 @@ class MainPresenterImpl : IMainPresenter, EMConnectionListener {
     private val mContactsManager: IContactsModel<String> = EMContactsManager
     private var mMainView: IMainView? = null
     private var mInvitationUserName: String? = null
+    private var mNotificationId: Int = -1
 
     private enum class Tab { CHAT, CONTACTS, SETTING, SEARCH }
 
@@ -148,6 +140,7 @@ class MainPresenterImpl : IMainPresenter, EMConnectionListener {
                         { e ->
                             mMainView?.showMessage("发生错误:${e.localizedMessage}")
                         })
+        mMainView?.dismissInvitation()
     }
 
     override fun onRefuse() {
@@ -160,6 +153,7 @@ class MainPresenterImpl : IMainPresenter, EMConnectionListener {
                         { e ->
                             mMainView?.showMessage("发生错误:${e.localizedMessage}")
                         })
+        mMainView?.dismissInvitation()
     }
 
     override fun onBackKey(): Boolean {
@@ -218,6 +212,17 @@ class MainPresenterImpl : IMainPresenter, EMConnectionListener {
     @Subscribe
     fun onIncomingCall(event: IncomingCallEvent) {
         val context = MainApplication.getContext() ?: return
-        IncomingCallPresenter.makeNotification(context, event.from, event.type)
+        mNotificationId = IncomingCallPresenter.makeNotification(context, event.from, event.type)
+    }
+
+    @Subscribe
+    fun onCallStateChanged(event: CallStateChangedEvent) {
+        val context = MainApplication.getContext() ?: return
+        synchronized(mNotificationId) {
+            if (event.state == ICallModel.CallState.DISCONNECTED && mNotificationId > 0) {
+                IncomingCallPresenter.dismissNotification(context, mNotificationId)
+                mNotificationId = -1
+            }
+        }
     }
 }

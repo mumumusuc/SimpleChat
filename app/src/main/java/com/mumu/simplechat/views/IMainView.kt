@@ -16,6 +16,7 @@ interface IMainView {
     fun showSettings()
     fun showSearchContact()
     fun showInvitation(name: String, reason: String)
+    fun dismissInvitation()
     fun showConversation(arg: Bundle)
 
     fun refresh()

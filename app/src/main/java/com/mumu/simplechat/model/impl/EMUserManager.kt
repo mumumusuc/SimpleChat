@@ -88,7 +88,7 @@ class EMUserManager : IUserModel {
             return
         }
         val lastUser = EMClient.getInstance().currentUser
-        if(!lastUser.isNullOrEmpty() && lastUser != user.useName){
+        if (!lastUser.isNullOrEmpty() && lastUser != user.useName) {
             logout(null)
         }
         EMClient.getInstance().login(user.useName, user.password, object : EMCallBack {
@@ -109,6 +109,7 @@ class EMUserManager : IUserModel {
     override fun logout(callback: IUserModel.Callback?) {
         EMClient.getInstance().logout(true, object : EMCallBack {
             override fun onSuccess() {
+                enableAutoLogin(false)
                 callback?.onSuccess()
             }
 

@@ -9,4 +9,5 @@ interface ICallPresenter : IPresenter<ICallView> {
     fun onInvoke(arg: Intent)
     fun onCall()
     fun onEndCall()
+    fun onSwitchCamera()
 }

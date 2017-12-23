@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_margin="4dp"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@drawable/ic_avatar_default" />
 
     <EditText
         android:id="@+id/register_input_username"
         style="@style/InputTextStyle"
         android:layout_below="@+id/register_avatar"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
         android:hint="用户名" />
 
     <EditText
@@ -27,16 +28,16 @@
         style="@style/InputTextStyle"
         android:layout_below="@+id/register_input_username"
         android:layout_centerHorizontal="true"
-        android:inputType="textPassword"
-        android:hint="密码" />
+        android:hint="密码"
+        android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/register_input_confirm_password"
         style="@style/InputTextStyle"
         android:layout_below="@+id/register_input_password"
         android:layout_centerHorizontal="true"
-        android:inputType="textPassword"
-        android:hint="确认密码" />
+        android:hint="确认密码"
+        android:inputType="textPassword" />
 
     <ImageView
         android:id="@+id/register_identifying_img"

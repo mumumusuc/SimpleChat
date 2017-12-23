@@ -8,5 +8,6 @@
     <color name="dock_item_selected">@color/colorPrimary</color>
     <color name="dock_bg_color">@color/gray_pressed</color>
 
-    <color name="divider_color">#30bbbbbb</color>
+    <color name="conversation_bg_color">#f2f0eb</color>
+    <color name="divider_color">@color/conversation_bg_color</color>
 </resources>

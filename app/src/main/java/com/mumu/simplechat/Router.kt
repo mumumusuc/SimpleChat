@@ -13,6 +13,7 @@ object Router {
     val INCOMING_CALL_VIEW_INTENT = "com.mumu.simplechat.INCOMING_CALL_ACTIVITY"
     val CALL_VIEW_INTENT = "com.mumu.simplechat.CALL_ACTIVITY"
     val CONVERSATION_VIEW_INTENT = "com.mumu.simplechat.CONVERSATION_ACTIVITY"
+    val SPLASH_VIEW_INTENT = "com.mumu.simplechat.SPLASH_ACTIVITY"
     /**/
     val CALL_EXTRA_KEY = "call_extra_argument"
     val CONVERSATION_EXTRA_KEY = "conversation_extra_argument"
@@ -32,6 +33,10 @@ object Router {
 
     fun goConversationView(context: Context, p: Bundle) {
         goWithParcelable(context, CONVERSATION_VIEW_INTENT, CONVERSATION_EXTRA_KEY, p)
+    }
+
+    fun goSplashView(context: Context){
+        goWithParcelable(context, SPLASH_VIEW_INTENT, null, null)
     }
 
     fun goWithParcelable(context: Context, action: String, key: String?, p: Parcelable?) {

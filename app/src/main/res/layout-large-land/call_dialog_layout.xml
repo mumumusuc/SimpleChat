@@ -7,21 +7,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null"
-        android:orientation="vertical">
-
-        <com.mumu.simplechat.bean.EMVideoView
-            android:id="@+id/call_opposite_surface"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:visibility="gone" />
+        android:orientation="horizontal">
 
         <com.mumu.simplechat.bean.EMVideoView
             android:id="@+id/call_local_surface"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone" />
+
+        <com.mumu.simplechat.bean.EMVideoView
+            android:layout_weight="1"
+            android:id="@+id/call_opposite_surface"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:visibility="gone" />
     </LinearLayout>
 

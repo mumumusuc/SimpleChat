@@ -1,6 +1,7 @@
 package com.mumu.simplechat.views.impl
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -8,7 +9,9 @@ import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
+import com.mumu.simplechat.Config
 import com.mumu.simplechat.R
 import com.mumu.simplechat.Router
 import com.mumu.simplechat.Utils
@@ -18,8 +21,9 @@ import com.mumu.simplechat.presenters.impl.MainPresenterImpl
 import com.mumu.simplechat.views.IMainView
 import com.mumu.simplechat.views.fragments.*
 
+
 class MainActivity : AppCompatActivity(),
-        IMainView{
+        IMainView {
 
     companion object {
         private val sMainPresenter: IMainPresenter = MainPresenterImpl()
@@ -79,7 +83,7 @@ class MainActivity : AppCompatActivity(),
     override fun refresh() {
         sHandler.post {
             chatListFragment.refresh()
-           // contactsFragment.refresh()
+            // contactsFragment.refresh()
         }
     }
 
@@ -111,6 +115,7 @@ class MainActivity : AppCompatActivity(),
     private val mHandler: Handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestedOrientation = if (Config.isPhone()) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mChatTab.setOnClickListener(mTabClickListener)
@@ -156,15 +161,19 @@ class MainActivity : AppCompatActivity(),
 
     /**/
     private var mContactsDialog: AlertDialog? = null
+    private var mContactsRoot: View? = null
+
 
     private fun createContactDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setNegativeButton("拒绝") { _, _ ->
+        val builder = AlertDialog.Builder(this, R.style.PopupDialog)
+        mContactsRoot = LayoutInflater.from(this).inflate(R.layout.contact_invitation_layout, null, false)
+        mContactsRoot?.findViewById(R.id.invitation_cancel)?.setOnClickListener {
             sMainPresenter.onRefuse()
-        };
-        builder.setPositiveButton("接受", { _, _ ->
+        }
+        mContactsRoot?.findViewById(R.id.invitation_confirm)?.setOnClickListener {
             sMainPresenter.onAgree()
-        });
+        }
+        builder.setView(mContactsRoot)
         mContactsDialog = builder.create()
     }
 
@@ -173,11 +182,17 @@ class MainActivity : AppCompatActivity(),
             if (mContactsDialog == null) {
                 createContactDialog()
             }
-            mContactsDialog!!.setTitle("好友请求")
-            mContactsDialog!!.setMessage(String.format("来自%s的好友请求\n%s", name, reason))
+            (mContactsRoot?.findViewById(R.id.invitation_name) as TextView).text = String.format("来自%s的好友请求", name)
+            (mContactsRoot?.findViewById(R.id.invitation_reason) as TextView).text = reason
             if (!mContactsDialog!!.isShowing) {
                 mContactsDialog!!.show()
             }
+        }
+    }
+
+    override fun dismissInvitation() {
+        if(mContactsDialog?.isShowing == true){
+            mContactsDialog?.dismiss()
         }
     }
 

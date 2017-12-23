@@ -1,7 +1,9 @@
 package com.mumu.simplechat.presenters.impl
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.hardware.camera2.CameraManager
 import android.util.Log
 import com.mumu.simplechat.MainApplication
@@ -12,6 +14,7 @@ import com.mumu.simplechat.model.impl.EMCallManager
 import com.mumu.simplechat.presenters.ICallPresenter
 import com.mumu.simplechat.views.ICallView
 import android.hardware.camera2.CameraCharacteristics
+import com.mumu.simplechat.Config
 
 
 class CallPresenter : ICallPresenter, ICallModel.CallCallback {
@@ -66,6 +69,10 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
         mLastState = null
     }
 
+    override fun onSwitchCamera() {
+        mCallModel.switchCamera()
+    }
+
     /**/
     override fun onCallStateChanged(
             callState: ICallModel.CallState,
@@ -99,6 +106,7 @@ class CallPresenter : ICallPresenter, ICallModel.CallCallback {
                     //TODO:对方未在线
                     mCallView?.showMessage("对方不在线")
                 }
+                //onEndCall()
             }
         //网络不稳定
             ICallModel.CallState.NETWORK_UNSTABLE -> {

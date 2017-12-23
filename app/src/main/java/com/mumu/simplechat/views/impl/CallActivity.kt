@@ -1,6 +1,7 @@
 package com.mumu.simplechat.views.impl
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.View.*
 import android.widget.ImageView
 import android.widget.TextView
+import com.mumu.simplechat.Config
 import com.mumu.simplechat.R
 import com.mumu.simplechat.bean.IVideoView
 import com.mumu.simplechat.presenters.ICallPresenter
@@ -36,9 +38,13 @@ class CallActivity : AppCompatActivity(), ICallView {
             by lazy { findViewById(R.id.call_local_surface) as IVideoView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestedOrientation = if (Config.isPhone()) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         super.onCreate(savedInstanceState)
         setContentView(R.layout.call_dialog_layout)
         mCallEnd.setOnClickListener { _ -> sPresenter.onEndCall() }
+        mCallEnd.setOnLongClickListener { _ ->
+            sPresenter.onSwitchCamera(); true
+        }
         sPresenter.bind(this)
         onNewIntent(intent)
     }

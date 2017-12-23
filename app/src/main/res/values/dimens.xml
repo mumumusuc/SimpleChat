@@ -8,4 +8,7 @@
     <dimen name="title_bar_max_height">52dp</dimen>
     <dimen name="title_icon_size">@dimen/ic_inner_size</dimen>
     <dimen name="title_text_size">24px</dimen>
+
+    <dimen name="invitation_dialog_width">408dp</dimen>
+    <dimen name="invitation_dialog_height">346dp</dimen>
 </resources>

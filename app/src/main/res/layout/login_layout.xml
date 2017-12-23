@@ -13,9 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_margin="4dp"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@drawable/ic_avatar_default" />
 
     <EditText
+        android:layout_marginTop="16dp"
         android:id="@+id/login_input_username"
         style="@style/InputTextStyle"
         android:layout_below="@+id/login_avatar"

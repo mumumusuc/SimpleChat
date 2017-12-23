@@ -39,10 +39,18 @@ class IncomingCallPresenter : IIncomingCallPresenter {
     companion object {
         private val SELF_ID = 1
 
-        fun makeNotification(context: Context, from: String, type: ICallModel.CallType) {
+        fun makeNotification(context: Context, from: String, type: ICallModel.CallType): Int {
             val self = IncomingCallPresenter()
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(SELF_ID, self.makeNotification(context, from, type))
+            return SELF_ID
+        }
+
+        fun dismissNotification(context: Context, id: Int) {
+            if (id == SELF_ID) {
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(id)
+            }
         }
     }
 

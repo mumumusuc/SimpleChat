@@ -1,7 +1,10 @@
 package com.mumu.simplechat.presenters.impl
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.util.Log
 import com.hyphenate.easeui.EaseConstant
+import com.mumu.simplechat.Config
 import com.mumu.simplechat.MainApplication
 import com.mumu.simplechat.Router
 import com.mumu.simplechat.bean.CallArgument
@@ -16,7 +19,7 @@ class ConversationPresenter : IConversationPresenter {
 
     override fun bind(view: IConversationView?) {
         mConversationView = view
-        if(mConversationView != null){
+        if (mConversationView != null) {
             val bundle = mConversationView!!.getArguments()
             mUser = bundle.getString(EaseConstant.EXTRA_USER_ID)
             mConversationView!!.showTitle(mUser!!)

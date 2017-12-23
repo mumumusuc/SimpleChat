@@ -1,5 +1,6 @@
 package com.mumu.simplechat.model.impl
 
+import android.util.Log
 import com.hyphenate.chat.EMCallStateChangeListener
 import com.mumu.simplechat.model.ICallModel
 import com.hyphenate.exceptions.EMServiceNotReadyException
@@ -7,6 +8,8 @@ import com.hyphenate.chat.EMClient
 import com.hyphenate.media.EMCallSurfaceView
 import com.mumu.simplechat.bean.IVideoView
 import com.hyphenate.exceptions.EMNoActiveCallException
+import com.mumu.simplechat.eventbus.EventBus
+import com.mumu.simplechat.eventbus.events.CallStateChangedEvent
 
 object EMCallManager : ICallModel<String>, EMCallStateChangeListener {
     private val TAG = EMCallManager::class.java.simpleName
@@ -41,6 +44,8 @@ object EMCallManager : ICallModel<String>, EMCallStateChangeListener {
         setStateListener(stateListener)
         try {//单参数
             EMClient.getInstance().callManager().makeVideoCall(user)
+            EMClient.getInstance().callManager().cameraFacing = 1
+           // switchCamera()
         } catch (e: EMServiceNotReadyException) {
             e.printStackTrace()
             stateListener?.onCallStateChanged(
@@ -86,15 +91,15 @@ object EMCallManager : ICallModel<String>, EMCallStateChangeListener {
                 opposite.asSurfaceView<EMCallSurfaceView>(),
                 local.asSurfaceView<EMCallSurfaceView>()
         )
-        EMClient.getInstance().callManager().getCallOptions().setVideoResolution(1080, 720);
+        //EMClient.getInstance().callManager().getCallOptions().setVideoResolution(1080, 720);
     }
 
-    /**/
     override fun onCallStateChanged(
             callState: EMCallStateChangeListener.CallState?,
             error: EMCallStateChangeListener.CallError?) {
         val r = convertToCallCallback(callState, error)
         mStateListener?.onCallStateChanged(r.first, r.second)
+        EventBus.post(CallStateChangedEvent(r.first))
     }
 
     private fun convertToCallCallback(

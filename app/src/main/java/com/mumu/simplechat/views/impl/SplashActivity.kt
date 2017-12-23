@@ -1,10 +1,14 @@
 package com.mumu.simplechat.views.impl
 
+import android.app.Activity
 import android.app.Fragment
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
+import com.mumu.simplechat.Config
 import com.mumu.simplechat.R
+import com.mumu.simplechat.Utils.checkAndAskPermissions
 import com.mumu.simplechat.presenters.ISplashPresenter
 import com.mumu.simplechat.presenters.impl.SplashPresenter
 import com.mumu.simplechat.views.ISplashView
@@ -49,11 +53,14 @@ class SplashActivity : AppCompatActivity(), ISplashView {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        checkAndAskPermissions(this)
         if (savedInstanceState != null) {
             mLoginView = fragmentManager.findFragmentByTag("LOGIN")
             mRegisterView = fragmentManager.findFragmentByTag("REGISTER")
         }
         super.onCreate(savedInstanceState)
+        requestedOrientation = if (Config.isPhone()) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
         setContentView(R.layout.splash_screen)
         sPresenter.bind(this)
         mSwitcher.setOnClickListener { _ -> sPresenter?.onSwitchScreen() }

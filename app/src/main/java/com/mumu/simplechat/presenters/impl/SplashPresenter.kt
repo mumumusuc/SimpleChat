@@ -1,5 +1,6 @@
 package com.mumu.simplechat.presenters.impl
 
+
 import com.google.common.eventbus.Subscribe
 import com.mumu.simplechat.Config
 import com.mumu.simplechat.MainApplication
@@ -14,6 +15,7 @@ import com.mumu.simplechat.views.ISplashView
 
 
 class SplashPresenter : ISplashPresenter {
+    private val TAG = SplashPresenter::class.java.simpleName
     private val LOGIN_VIEW = 1
     private val REGISTER_VIEW = 2
 
@@ -65,10 +67,10 @@ class SplashPresenter : ISplashPresenter {
         mSplashView?.showLoginView()
     }
 
-    private fun needLogin():Boolean =
-        mUserModel.checkLogin() != IUserModel.State.USER_ALREADY_LOGIN
-                || !mUserModel.isAutoLogin()
-                || !Config.autoLogin
+    private fun needLogin(): Boolean =
+            mUserModel.checkLogin() != IUserModel.State.USER_ALREADY_LOGIN
+                    || !mUserModel.isAutoLogin()
+                    || !Config.autoLogin
 
 
     private fun goNext() {
