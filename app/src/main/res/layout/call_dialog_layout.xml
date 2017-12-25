@@ -42,7 +42,7 @@
             android:layout_height="@dimen/call_avatar_size"
             android:layout_margin="16dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_launcher_round"
+            android:src="@drawable/ic_avatar_default"
             android:transitionName="shared_call_avatar" />
 
         <TextView
