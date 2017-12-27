@@ -53,8 +53,8 @@
         <!--call activity,audio/video-call-->
         <activity
             android:name=".views.impl.CallActivity"
-            android:theme="@style/CallActivityTheme"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:theme="@style/CallActivityTheme">
             <intent-filter>
                 <action android:name="com.mumu.simplechat.CALL_ACTIVITY" />
                 <action android:name="com.mumu.simplechat.MAKE_CALL" />
@@ -80,7 +80,8 @@
         <!-- 设置环信应用的AppKey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="1178171206178064#simplechat" />
+            android:value="1112171205115021#im" />
+        <!--android:value="1178171206178064#simplechat"-->
         <!-- 声明SDK所需的service SDK核心功能-->
         <service
             android:name="com.hyphenate.chat.EMChatService"

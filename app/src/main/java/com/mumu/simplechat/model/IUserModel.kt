@@ -1,7 +1,9 @@
 package com.mumu.simplechat.model
 
 import android.content.Context
+import android.graphics.Bitmap
 import com.mumu.simplechat.bean.UserInfo
+import io.reactivex.Observable
 
 interface IUserModel {
     fun saveAsDefaultUser(context: Context, user: UserInfo): Boolean
@@ -9,20 +11,16 @@ interface IUserModel {
     fun queryUsers(): Array<UserInfo>?
     fun checkLogin(): State
     fun checkUser(user: UserInfo): State
-    fun login(user: UserInfo, callback: Callback?)
-    fun logout(callback: Callback?)
-    fun register(user: UserInfo, callback: Callback?)
+
+    fun login(user: UserInfo): Observable<State>
+    fun logout(): Observable<State>
+    fun register(name: String, pwd: String, pwdrp: String, verifyCode: String): Observable<State>
+    fun getRegisterCode(): Observable<Bitmap>
 
     fun isAutoLogin(): Boolean
     fun isSaveUser(): Boolean
     fun enableAutoLogin(enable: Boolean)
     fun enableSaveUser(enable: Boolean)
-
-    interface Callback {
-        fun onSuccess()
-        fun onProgress(progress: Int, status: String?)
-        fun onError(state: State, message: String?)
-    }
 
     enum class State {
         NO_ERROR,

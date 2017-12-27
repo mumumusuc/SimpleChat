@@ -41,11 +41,11 @@
 
     <ImageView
         android:id="@+id/register_identifying_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/verify_code_max_width"
+        android:layout_height="@dimen/verify_code_max_height"
+        android:scaleType="fitCenter"
         android:layout_alignStart="@+id/register_input_confirm_password"
-        android:layout_below="@+id/register_input_confirm_password"
-        android:src="@mipmap/ic_launcher" />
+        android:layout_below="@+id/register_input_confirm_password" />
 
     <EditText
         android:id="@+id/register_identifying_code"
@@ -53,6 +53,9 @@
         android:layout_below="@+id/register_input_confirm_password"
         android:layout_toEndOf="@+id/register_identifying_img"
         android:hint="验证码"
+        android:singleLine="true"
+        android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        android:imeOptions="actionDone"
         android:maxWidth="300dp"
         android:minWidth="100dp" />
 
@@ -61,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/register_input_confirm_password"
-        android:layout_below="@+id/register_identifying_code"
+        android:layout_below="@+id/register_identifying_img"
         android:checked="true"
         android:text="我已阅读并同意条款" />
 

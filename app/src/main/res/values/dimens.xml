@@ -11,4 +11,7 @@
 
     <dimen name="invitation_dialog_width">408dp</dimen>
     <dimen name="invitation_dialog_height">346dp</dimen>
+
+    <dimen name="verify_code_max_width">80dp</dimen>
+    <dimen name="verify_code_max_height">80dp</dimen>
 </resources>

@@ -8,8 +8,9 @@ import com.mumu.simplechat.model.IUserModel
 import com.mumu.simplechat.model.impl.EMUserManager
 import com.mumu.simplechat.presenters.ILoginPresenter
 import com.mumu.simplechat.views.ILoginView
+import io.reactivex.android.schedulers.AndroidSchedulers
 
-class LoginPresenter : ILoginPresenter, IUserModel.Callback {
+class LoginPresenter : ILoginPresenter {
     private val TAG = LoginPresenter::class.java.simpleName
     private val mUserModel: IUserModel = EMUserManager()
     private var mLoginView: ILoginView? = null
@@ -38,7 +39,13 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
         )
         mLoginView?.showLoginWaiting(true)
         mLoginView?.showMessage("登录中")
-        mUserModel.login(mUser!!, this)
+        mUserModel.login(mUser!!)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {},
+                        { e -> onError(e.localizedMessage) },
+                        { onSuccess() }
+                )
     }
 
     override fun onCancel() {
@@ -60,7 +67,7 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
             mLoginView?.enableSaveUser(true)
     }
 
-    override fun onSuccess() {
+    private fun onSuccess() {
         val context = mLoginView?.getContext()
         mLoginView?.showLoginWaiting(false)
         mLoginView?.showMessage("登录成功")
@@ -70,13 +77,10 @@ class LoginPresenter : ILoginPresenter, IUserModel.Callback {
         goMainActivity()
     }
 
-    override fun onProgress(progress: Int, status: String?) {
-    }
-
-    override fun onError(state: IUserModel.State, message: String?) {
-        Log.d(TAG, "onError -> state = ${state}")
+    private fun onError(message: String?) {
+        Log.d(TAG, "onError -> state = ${message}")
         mLoginView?.showLoginWaiting(false)
-        mLoginView?.showMessage("$state , $message")
+        mLoginView?.showMessage("$message")
         mUser = null
     }
 

@@ -64,7 +64,7 @@ class SplashPresenter : ISplashPresenter {
 
     @Subscribe
     fun onRegisterSuccess(event: RegisterSuccessEvent) {
-        mSplashView?.showLoginView()
+        showLoginView()
     }
 
     private fun needLogin(): Boolean =

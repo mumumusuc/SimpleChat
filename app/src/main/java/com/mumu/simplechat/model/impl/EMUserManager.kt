@@ -1,6 +1,7 @@
 package com.mumu.simplechat.model.impl
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Base64
 import com.hyphenate.EMCallBack
 import com.hyphenate.EMError
@@ -14,6 +15,13 @@ import javax.crypto.spec.SecretKeySpec
 import android.util.Log
 import com.mumu.simplechat.Config
 import com.mumu.simplechat.MainApplication
+import com.mumu.simplechat.Service.ServiceAction
+import com.mumu.simplechat.Untils.HttpUntil
+import io.reactivex.Observable
+import io.reactivex.exceptions.Exceptions
+import io.reactivex.functions.Function
+import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 import java.nio.charset.Charset
 
 
@@ -80,47 +88,72 @@ class EMUserManager : IUserModel {
         return IUserModel.State.NO_ERROR
     }
 
-    override fun login(user: UserInfo, callback: IUserModel.Callback?) {
-        val state = checkUser(user)
-        Log.i(TAG, "login -> checkUser = $state")
-        if (state != IUserModel.State.NO_ERROR) {
-            callback?.onError(state, null)
-            return
-        }
-        val lastUser = EMClient.getInstance().currentUser
-        if (!lastUser.isNullOrEmpty() && lastUser != user.useName) {
-            logout(null)
-        }
-        EMClient.getInstance().login(user.useName, user.password, object : EMCallBack {
-            override fun onSuccess() {
-                callback?.onSuccess()
-            }
+    override fun login(user: UserInfo): Observable<IUserModel.State> {
+        return Observable.create<IUserModel.State>(
+                { subscriber ->
+                    val state = checkUser(user)
+                    Log.i(TAG, "login -> checkUser = $state")
+                    if (state != IUserModel.State.NO_ERROR) {
+                        subscriber.onError(Throwable(state.toString()))
+                        return@create
+                    }
+                    val lastUser = EMClient.getInstance().currentUser
+                    if (!lastUser.isNullOrEmpty() && lastUser != user.useName) {
+                        logout()
+                    }
+                    val serviceAction = ServiceAction()
+                    try {
+                        val ad = serviceAction.login(user)
+                        if (ad == "FAIL") {
+                            subscriber.onError(Throwable("登录失败"))
+                            return@create
+                        }
+                        Log.i(TAG, "login -> $ad")
+                        val json = JSONObject(ad)
+                        val aa = json.getInt("id")
+                        user.id = aa
+                        if (aa <= 0) {
+                            throw Exceptions.propagate(Throwable("id=$aa"))
+                        }
+                        //HttpUntil.name = user.useName
+                    } catch (e: HyphenateException) {
+                        subscriber.onError(e)
+                        return@create
+                    }
+                    EMClient.getInstance().login(user.useName, user.password, object : EMCallBack {
+                        override fun onSuccess() {
+                            subscriber.onNext(state)
+                            subscriber.onComplete()
+                        }
 
-            override fun onProgress(progress: Int, status: String?) {
-                callback?.onProgress(progress, status)
-            }
+                        override fun onProgress(progress: Int, status: String?) {
+                        }
 
-            override fun onError(code: Int, error: String?) {
-                callback?.onError(convertEMErrorCode(code), error)
-            }
-        })
+                        override fun onError(code: Int, error: String?) {
+                            subscriber.onError(Throwable("${convertEMErrorCode(code)} : $error"))
+                        }
+                    })
+                }).subscribeOn(Schedulers.io())
     }
 
-    override fun logout(callback: IUserModel.Callback?) {
-        EMClient.getInstance().logout(true, object : EMCallBack {
-            override fun onSuccess() {
-                enableAutoLogin(false)
-                callback?.onSuccess()
-            }
+    override fun logout(): Observable<IUserModel.State> {
+        return Observable.create<IUserModel.State>(
+                { subscriber ->
+                    EMClient.getInstance().logout(true, object : EMCallBack {
+                        override fun onSuccess() {
+                            enableAutoLogin(false)
+                            subscriber.onNext(IUserModel.State.NO_ERROR)
+                            subscriber.onComplete()
+                        }
 
-            override fun onProgress(progress: Int, status: String?) {
-                callback?.onProgress(progress, status)
-            }
+                        override fun onProgress(progress: Int, status: String?) {
+                        }
 
-            override fun onError(code: Int, error: String?) {
-                callback?.onError(convertEMErrorCode(code), error)
-            }
-        })
+                        override fun onError(code: Int, error: String?) {
+                            subscriber.onError(Throwable(convertEMErrorCode(code).toString() + error))
+                        }
+                    })
+                })
     }
 
     private fun getSavedInfo() {
@@ -162,24 +195,44 @@ class EMUserManager : IUserModel {
         saveInfo()
     }
 
-    override fun register(user: UserInfo, callback: IUserModel.Callback?) {
-        val state = checkUser(user)
-        if (state != IUserModel.State.NO_ERROR) {
-            callback?.onError(state, null)
-            return
-        }
-        //TODO: go server for verify
-        //NOTICE: test only
-        Thread(Runnable {
+    override fun register(
+            name: String,
+            pwd: String,
+            pwdrp: String,
+            verifyCode: String): Observable<IUserModel.State> {
+        return Observable.create<IUserModel.State>({ subscriber ->
+            val user = UserInfo(name, pwd, null)
+            val state = checkUser(user)
+            if (state != IUserModel.State.NO_ERROR) {
+                subscriber.onError(Throwable(state.toString()))
+                return@create
+            }
             try {
                 //注册失败会抛出HyphenateException
-                EMClient.getInstance().createAccount(user.useName, user.password);//同步方法
-                callback?.onSuccess()
+                val re = ServiceAction().register(user, pwdrp, verifyCode)
+                if (re.startsWith("FAIL")) {
+                    subscriber.onError(Throwable("注册失败"))
+                    return@create
+                }
+                //EMClient.getInstance().createAccount(user.useName, user.password);//同步方法
             } catch (e: HyphenateException) {
-                e.printStackTrace()
-                callback?.onError(IUserModel.State.ERROR_UNKNOWN, e.message)
+                subscriber.onError(e)
             }
-        }).start()
+            subscriber.onNext(IUserModel.State.NO_ERROR)
+            subscriber.onComplete()
+        }).subscribeOn(Schedulers.io())
+    }
+
+    override fun getRegisterCode(): Observable<Bitmap> {
+        return Observable.create<Bitmap>({ subscriber ->
+            try {
+                val bmp = ServiceAction().getImagCode()
+                subscriber.onNext(bmp)
+                subscriber.onComplete()
+            } catch (e: Exception) {
+                subscriber.onError(Exceptions.propagate(e))
+            }
+        }).subscribeOn(Schedulers.io())
     }
 
     private fun convertEMErrorCode(code: Int): IUserModel.State {

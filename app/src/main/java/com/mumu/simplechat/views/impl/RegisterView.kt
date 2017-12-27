@@ -2,6 +2,7 @@ package com.mumu.simplechat.views.impl
 
 import android.app.Fragment
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -28,6 +29,8 @@ class RegisterView : Fragment(), IRegisterView {
     private var registerConfirm: Button? = null
     private var registerMsg: TextView? = null
     private var registerWait: ProgressBar? = null
+    private var registerVerifyImage: ImageView? = null
+    private var registerVerifyCode: EditText? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -53,12 +56,18 @@ class RegisterView : Fragment(), IRegisterView {
         registerConfirm = root.findViewById(R.id.register_confirm) as Button
         registerMsg = root.findViewById(R.id.register_msg) as TextView
         registerWait = root.findViewById(R.id.register_waiting) as ProgressBar
+        registerVerifyImage = root.findViewById(R.id.register_identifying_img) as ImageView
+        registerVerifyCode = root.findViewById(R.id.register_identifying_code) as EditText
 
-        registerProvision?.setOnCheckedChangeListener { compoundButton, checked ->
+        registerProvision?.setOnCheckedChangeListener { _, checked ->
             run {
                 registerConfirm?.isEnabled = checked
             }
         }
+        registerVerifyImage?.setOnClickListener {
+            sPresenter.getVerifyCode()
+        }
+
         registerConfirm?.setOnClickListener { view -> sPresenter?.onRegister() }
         return root
     }
@@ -97,5 +106,16 @@ class RegisterView : Fragment(), IRegisterView {
         sHandler.post {
             registerMsg?.text = msg
         }
+    }
+
+    override fun showRegisterCode(code: Bitmap) {
+        sHandler.post {
+            if (code != null)
+                registerVerifyImage?.setImageBitmap(code)
+        }
+    }
+
+    override fun getRegisterString(): String {
+        return registerVerifyCode?.text?.toString() ?: ""
     }
 }

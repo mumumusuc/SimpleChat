@@ -3,6 +3,10 @@ package com.mumu.simplechat.model.impl
 import android.util.Log
 import com.hyphenate.EMContactListener
 import com.hyphenate.chat.EMClient
+import com.hyphenate.easeui.R.id.list
+import com.mumu.simplechat.Service.ServiceAction
+import com.mumu.simplechat.Untils.HttpUntil
+import com.mumu.simplechat.bean.UserInfo
 import com.mumu.simplechat.eventbus.EventBus
 import com.mumu.simplechat.eventbus.events.ContactsAcceptedEvent
 import com.mumu.simplechat.eventbus.events.ContactsChangedEvent
@@ -12,6 +16,7 @@ import io.reactivex.Observable
 import io.reactivex.exceptions.Exceptions
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONArray
 
 object EMContactsManager : IContactsModel<String>, EMContactListener {
     private val TAG = EMContactsManager::class.java.simpleName
@@ -24,8 +29,28 @@ object EMContactsManager : IContactsModel<String>, EMContactListener {
         return Observable.create<List<String>>(
                 { subscriber ->
                     try {
-                        val list = EMClient.getInstance().contactManager().allContactsFromServer
-                        subscriber.onNext(list)
+                        //val list = EMClient.getInstance().contactManager().allContactsFromServer
+                        val serverAction = ServiceAction()
+                        var result = serverAction.getAllFriend(EMClient.getInstance().currentUser)
+                        Log.d(TAG,"getAllContacts -> get $result")
+                        val list1 = mutableListOf<String>()
+                        val userList = mutableListOf<UserInfo>()
+                        val jsonArray = JSONArray(result)
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject2 = jsonArray.getJSONObject(i)
+                            val id = jsonObject2.getInt("id")
+                            val name = jsonObject2.getString("name")
+                            val nickname = jsonObject2.getString("nickname")
+                            val telphone = jsonObject2.getString("telphone")
+                            val user = UserInfo(name, "", null) //这里看情况修改
+                            user.nickname = nickname
+                            user.id = id
+                            user.telphone = telphone
+                            userList.add(user)
+                            list1.add(name)
+                        }
+                        subscriber.onNext(list1)
+                        //subscriber.onNext(list)
                         subscriber.onComplete()
                     } catch (e: Exception) {
                         subscriber.onError(Exceptions.propagate(e))
@@ -37,7 +62,24 @@ object EMContactsManager : IContactsModel<String>, EMContactListener {
         return Observable.create<List<String>>(
                 { subscriber ->
                     try {
-                        //subscriber.onNext(list)
+                        val result = ServiceAction().search(name)
+                        Log.d(TAG,"findContacts -> get $result")
+                        val list = mutableListOf<String>()
+                        val jsonArray = JSONArray(result)
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject2 = jsonArray.getJSONObject(i)
+                            //val id = jsonObject2.getInt("id")
+                            val name = jsonObject2.getString("name")
+                            //val nickname = jsonObject2.getString("nickname")
+                            //val telphone = jsonObject2.getString("telphone")
+                            //val user = UserInfo(name, "", null) //这里看情况修改
+                            //user.nickname = nickname
+                            //user.id = id
+                            //user.telphone = telphone
+                            //mSearchUserList.add(user)
+                            list.add(name)
+                        }
+                        subscriber.onNext(list)
                         subscriber.onComplete()
                     } catch (e: Exception) {
                         subscriber.onError(Exceptions.propagate(e))
@@ -61,7 +103,12 @@ object EMContactsManager : IContactsModel<String>, EMContactListener {
             Observable.just(name).subscribeOn(Schedulers.io()).map(
                     Function<String, String> {
                         try {
-                            EMClient.getInstance().contactManager().deleteContact(name)
+//                            EMClient.getInstance().contactManager().deleteContact(name)
+                            val serverAction = ServiceAction()
+                            val result = serverAction.deleteFriend(EMClient.getInstance().currentUser, name)
+                            if(result.contains("FAIL")){
+                                Exceptions.propagate(Throwable(result))
+                            }
                             return@Function "NO_ERROR"
                         } catch (e: Exception) {
                             throw Exceptions.propagate(e)
@@ -74,8 +121,13 @@ object EMContactsManager : IContactsModel<String>, EMContactListener {
             Observable.just(name).subscribeOn(Schedulers.io()).map(
                     Function<String, String> {
                         try {
-                            EMClient.getInstance().contactManager().acceptInvitation(name);
+                            val serverAction = ServiceAction()
+                            val result = serverAction.addFriend(EMClient.getInstance().currentUser, name)
+                            if(result.contains("FAIL")){
+                                Exceptions.propagate(Throwable(result))
+                            }
                             return@Function "NO_ERROR"
+                            //EMClient.getInstance().contactManager().acceptInvitation(name);
                         } catch (e: Exception) {
                             throw Exceptions.propagate(e)
                         }

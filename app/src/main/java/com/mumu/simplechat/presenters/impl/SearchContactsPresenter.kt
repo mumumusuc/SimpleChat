@@ -44,8 +44,29 @@ class SearchContactsPresenter : ISearchContactsPresenter {
         sHandler.postDelayed(
                 {
                     mSearchList.clear()
-                    mSearchList.add(str)
-                    mView?.showResults(mSearchList)
+                    if (str.isNullOrEmpty() || str.isNullOrBlank()) {
+                        mView?.showResults(mSearchList)
+                    } else {
+                        mView?.showWaiting()
+                        mContactsManager.findContacts(str)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        { list ->
+                                            if (list.isNotEmpty()) {
+                                                mSearchList.addAll(list)
+                                            } else {
+                                                mView?.showMessage("未找到用户$str")
+                                            }
+                                        },
+                                        {
+                                            mView?.dismissWaiting()
+                                        },
+                                        {
+                                            mView?.showResults(mSearchList)
+                                            mView?.dismissWaiting()
+                                        }
+                                )
+                    }
                 },
                 SEARCH_DELAY
         )

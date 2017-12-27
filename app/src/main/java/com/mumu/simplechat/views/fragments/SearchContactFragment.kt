@@ -9,6 +9,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import com.mumu.simplechat.R
@@ -26,8 +28,9 @@ class SearchContactFragment : Fragment(), ISearchContactView {
     }
 
     private val RESULT_MASK = "添加%s为联系人"
-    private val mSearchEditor: EditText by lazy { view?.findViewById(R.id.change_contacts_search) as EditText }
-    private val mListView: ListView by lazy { view?.findViewById(R.id.change_contacts_list) as ListView }
+    private val mSearchEditor: EditText by lazy { view?.findViewById(R.id.search_contacts_search) as EditText }
+    private val mListView: ListView by lazy { view?.findViewById(R.id.search_contacts_list) as ListView }
+    private val mWaiting: ProgressBar by lazy { view?.findViewById(R.id.search_contacts_wait) as ProgressBar }
     private val mAdapter = object : BaseAdapter() {
 
         override fun getView(index: Int, convertView: View?, parent: ViewGroup?): View {
@@ -106,6 +109,18 @@ class SearchContactFragment : Fragment(), ISearchContactView {
     override fun showMessage(msg: String) {
         sHandler.post {
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun showWaiting() {
+        sHandler.post {
+            mWaiting?.visibility = VISIBLE
+        }
+    }
+
+    override fun dismissWaiting() {
+        sHandler.post {
+            mWaiting?.visibility = GONE
         }
     }
 }

@@ -6,6 +6,7 @@ import com.mumu.simplechat.model.IUserModel
 import com.mumu.simplechat.model.impl.EMUserManager
 import com.mumu.simplechat.presenters.ISettingPresenter
 import com.mumu.simplechat.views.ISettingView
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class SettingPresenter : ISettingPresenter {
 
@@ -18,20 +19,20 @@ class SettingPresenter : ISettingPresenter {
 
     override fun onLogout() {
         mView?.showWaitingMessage("退出登录中...")
-        mUserManager.logout(object : IUserModel.Callback {
-            override fun onSuccess() {
-                mView?.dismissWaitMessage()
-                Router.goSplashView(MainApplication.getContext()!!)
-                mView?.close()
-            }
+        mUserManager.logout()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {},
+                        { _ ->
+                            mView?.showWaitingMessage("退出登录失败")
+                            mView?.dismissWaitMessage()
+                        },
+                        {
+                            mView?.dismissWaitMessage()
+                            Router.goSplashView(MainApplication.getContext()!!)
+                            mView?.close()
+                        }
+                )
 
-            override fun onProgress(progress: Int, status: String?) {
-            }
-
-            override fun onError(state: IUserModel.State, message: String?) {
-                mView?.showWaitingMessage("退出登录失败")
-                mView?.dismissWaitMessage()
-            }
-        })
     }
 }
