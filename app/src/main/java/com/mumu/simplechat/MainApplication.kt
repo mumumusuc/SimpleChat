@@ -8,7 +8,7 @@ import com.hyphenate.easeui.EaseUI
 import com.mumu.simplechat.model.impl.EMCallManager
 import com.mumu.simplechat.model.impl.EMContactsManager
 
-class MainApplication : Application() {
+class MainApplication : android.support.multidex.MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         sContext = applicationContext
