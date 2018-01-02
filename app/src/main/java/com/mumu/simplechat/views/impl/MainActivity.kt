@@ -111,9 +111,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    /**/
-    private val mHandler: Handler = Handler(Looper.getMainLooper())
-
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = if (Config.isPhone()) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         super.onCreate(savedInstanceState)
